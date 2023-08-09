@@ -3,3 +3,9 @@ export type leftSidebarTypes = {
   icon: JSX.Element;
   path: string;
 };
+
+export type InputTypes = {
+  username: string;
+  email: string | number;
+  password: string | number;
+};

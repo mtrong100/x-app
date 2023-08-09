@@ -46,7 +46,7 @@ const config: Config = {
         // primaryGradient: "linear-gradient(to left, #159957, #155799)",
       },
       boxShadow: {
-        blurMint: "0px 8px 8px rgba(46, 212, 128, 0.3)",
+        blurPrimary: "0px 0px 8px 8px rgba(71, 91, 232, 0.3)",
       },
     },
   },
