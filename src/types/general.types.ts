@@ -10,7 +10,7 @@ export type InputTypes = {
   password: string | number;
 };
 
-export type TUser = {
+export type UserDataTypes = {
   email: string;
   username: string;
   role: "user" | "admin";
