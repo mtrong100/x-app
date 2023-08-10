@@ -10,26 +10,26 @@ export const sidebarLinks = [
   {
     name: "Home",
     icon: <HomeIcon />,
-    path: "/",
+    route: "/",
   },
   {
     name: "Search",
     icon: <SearchIcon />,
-    path: "/search",
+    route: "/search",
   },
   {
     name: "Notification",
     icon: <NotificationIcon />,
-    path: "/home",
+    route: "/notification",
   },
   {
     name: "Bookmark",
     icon: <BookmarkIcon />,
-    path: "/bookmark",
+    route: "/bookmark",
   },
   {
     name: "Profile",
     icon: <ProfileIcon />,
-    path: "/profile",
+    route: "/profile",
   },
 ];

@@ -2,13 +2,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
-import { FcGoogle } from "react-icons/fc";
-import { FaGithub } from "react-icons/fa";
-import { ArrowrightIcon } from "@/components/icons/Icon";
 import Button from "@/components/button/Button";
 import { SubmitHandler, useForm } from "react-hook-form";
 import InputField, { InputPasswordToggle } from "@/components/input/Input";
 import { InputTypes } from "@/types/general.types";
+import LoginWithGoogle from "@/components/login-method/LoginWithGoogle";
+import LoginWithGithub from "@/components/login-method/LoginWithGithub";
 /* ====================================================== */
 
 const SiginPage = () => {
@@ -38,30 +37,8 @@ const SiginPage = () => {
         <h1 className="mt-3 mb-2 font-bold text-3xl capitalize">Sign in</h1>
         <p>Continue with...</p>
         <div className="w-full mt-5 flex flex-col gap-3">
-          {/* Login with google */}
-          <div className="flex items-center group transition-all justify-between hover:bg-darkHover cursor-pointer  border border-text_2 p-3 rounded-lg">
-            <div className="flex items-center gap-3">
-              <span className="text-2xl">
-                <FcGoogle />
-              </span>
-              <p>Continue with Google</p>
-            </div>
-            <span className=" -translate-x-5 transition-all invisible duration-300 group-hover:visible  group-hover:translate-x-0 ">
-              <ArrowrightIcon />
-            </span>
-          </div>
-          {/* Login with github */}
-          <div className="flex items-center group transition-all justify-between hover:bg-darkHover cursor-pointer  border border-text_2 p-3 rounded-lg">
-            <div className="flex items-center gap-3">
-              <span className="text-2xl">
-                <FaGithub />
-              </span>
-              <p>Continue with Google</p>
-            </div>
-            <span className=" -translate-x-5 transition-all invisible duration-300 group-hover:visible  group-hover:translate-x-0 ">
-              <ArrowrightIcon />
-            </span>
-          </div>
+          <LoginWithGoogle />
+          <LoginWithGithub />
         </div>
         {/* Seperate */}
         <div className="w-full relative my-5 h-[1px] bg-text_3">

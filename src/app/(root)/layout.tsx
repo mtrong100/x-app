@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
+import ToastProvider from "@/providers/ToastProvider";
 import RightSidebar from "@/components/shared/RightSidebar";
 import LeftSidebar from "@/components/shared/LeftSidebar";
 import { Inter } from "next/font/google";
+import "react-toastify/dist/ReactToastify.css";
 import "../globals.css";
+import { ReduxProvider } from "@/providers/ReduxProvider";
 /* ====================================================== */
 
 const inter = Inter({ subsets: ["latin"] });
@@ -20,15 +23,19 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <main className="flex flex-row w-full max-w-[1300px] mx-auto">
-          <div className="flex flex-row w-full flex-1">
-            <LeftSidebar />
-            <section className="w-full max-w-5xl mx-auto flex-1 p-5">
-              {children}
-            </section>
-          </div>
-          <RightSidebar />
-        </main>
+        <ReduxProvider>
+          <ToastProvider>
+            <main className="flex flex-row w-full max-w-[1300px] mx-auto">
+              <div className="flex flex-row w-full flex-1">
+                <LeftSidebar />
+                <section className="w-full max-w-4xl mx-auto flex-1 ">
+                  {children}
+                </section>
+              </div>
+              <RightSidebar />
+            </main>
+          </ToastProvider>
+        </ReduxProvider>
       </body>
     </html>
   );

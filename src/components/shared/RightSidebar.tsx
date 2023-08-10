@@ -12,7 +12,7 @@ const RightSidebar = () => {
       <div
         className={`${
           isInputFocused ? "border-primaryColor" : "border-transparent"
-        } flex items-center  w-full gap-3 p-3 rounded-full bg-primaryDark border`}
+        } flex items-center  w-full gap-3 py-2 px-3 rounded-full bg-primaryDark border`}
       >
         <SearchIcon />
         <input
@@ -20,6 +20,7 @@ const RightSidebar = () => {
           onBlur={() => setIsInputFocused(false)}
           className="w-full outline-none bg-transparent"
           type="text"
+          placeholder="Search..."
         />
       </div>
 
@@ -56,7 +57,7 @@ const RightSidebar = () => {
                 </span>
               </li>
             ))}
-          <div className="flex items-center justify-center cursor-pointer hover:bg-whiteSoft w-full p-3 rounded-md hover:text-black font-semibold transition-all">
+          <div className="flex  items-center justify-center cursor-pointer hover:bg-whiteSoft w-full p-2 rounded-full border border-text_1 hover:text-black font-semibold transition-all">
             See more
           </div>
         </ul>

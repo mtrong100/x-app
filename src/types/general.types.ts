@@ -1,11 +1,20 @@
-export type leftSidebarTypes = {
+export type TSidebarLinks = {
   name: string;
   icon: JSX.Element;
-  path: string;
+  route: string;
 };
 
 export type InputTypes = {
   username: string;
   email: string | number;
   password: string | number;
+};
+
+export type TUser = {
+  email: string;
+  username: string;
+  role: "user" | "admin";
+  slug: string;
+  photoURL: string;
+  createdAt: any;
 };

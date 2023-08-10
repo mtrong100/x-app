@@ -14,9 +14,11 @@ const Loading = ({
   color = "border-white",
 }: LoadingProps) => {
   return (
-    <div
-      className={`${className} ${size} ${border} ${color} animate-spin flex items-center justify-center mx-auto rounded-full  border-t-transparent  border-solid `}
-    ></div>
+    <div className="flex items-center justify-center h-screen">
+      <div
+        className={`${className} ${size} ${border} ${color} animate-spin flex items-center justify-center mx-auto rounded-full border-t-transparent border-solid`}
+      ></div>
+    </div>
   );
 };
 
