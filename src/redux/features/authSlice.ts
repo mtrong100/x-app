@@ -1,15 +1,6 @@
 import { TUser } from "@/types/general.types";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { User, UserMetadata } from "firebase/auth";
-
-export type TUser = {
-  email: string;
-  username: string;
-  role: "user" | "admin";
-  slug: string;
-  photoURL: string;
-  createdAt: any;
-};
+/* ====================================================== */
 
 export interface AuthState {
   user: TUser;
