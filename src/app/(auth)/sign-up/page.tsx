@@ -8,11 +8,33 @@ import { ArrowrightIcon } from "@/components/icons/Icon";
 import InputField, { InputPasswordToggle } from "@/components/input/Input";
 import Button from "@/components/button/Button";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { InputTypes } from "@/types/general.types";
+import { TUserSignup } from "@/types/general.types";
+import {
+  addDoc,
+  collection,
+  doc,
+  serverTimestamp,
+  setDoc,
+} from "firebase/firestore";
+import { auth, db } from "@/utils/firebase";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { SignupValidation } from "@/utils/validate";
+import LoginWithGoogle from "@/components/login-method/LoginWithGoogle";
+import LoginWithGithub from "@/components/login-method/LoginWithGithub";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import slugify from "slugify";
+import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
 /* ====================================================== */
 
 const SigupPage = () => {
-  const { handleSubmit, control } = useForm<InputTypes>({
+  const router = useRouter();
+  const {
+    handleSubmit,
+    control,
+    formState: { errors, isValid },
+  } = useForm<TUserSignup>({
+    resolver: zodResolver(SignupValidation),
     defaultValues: {
       username: "",
       email: "",
@@ -20,8 +42,29 @@ const SigupPage = () => {
     },
   });
 
-  const onSubmit: SubmitHandler<InputTypes> = (data) => {
-    console.log(data);
+  const onSubmit: SubmitHandler<TUserSignup> = async (data) => {
+    if (!isValid) return;
+    try {
+      await createUserWithEmailAndPassword(auth, data.email, data.password);
+      const userRef = collection(db, "users");
+      await addDoc(userRef, {
+        username: data.username,
+        slug: slugify(data.username, { lower: true }),
+        email: data.email,
+        password: data.password,
+        role: "user",
+        photoURL: "https://i.imgur.com/2LDUDB6.jpeg",
+        createdAt: serverTimestamp(),
+      });
+      toast.success("Welcome to X!", {
+        theme: "dark",
+        autoClose: 2000,
+        pauseOnHover: false,
+      });
+      router.push("/");
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -39,30 +82,8 @@ const SigupPage = () => {
         <h1 className="mt-5 mb-2 font-bold text-3xl">Create your account</h1>
         <p>Or continue with</p>
         <div className="w-full mt-5 flex flex-col gap-3">
-          {/* Login with google */}
-          <div className="flex items-center group transition-all justify-between hover:bg-darkHover cursor-pointer  border border-text_2 p-3 rounded-lg">
-            <div className="flex items-center gap-3">
-              <span className="text-2xl">
-                <FcGoogle />
-              </span>
-              <p>Continue with Google</p>
-            </div>
-            <span className=" -translate-x-5 transition-all invisible duration-300 group-hover:visible  group-hover:translate-x-0 ">
-              <ArrowrightIcon />
-            </span>
-          </div>
-          {/* Login with github */}
-          <div className="flex items-center group transition-all justify-between hover:bg-darkHover cursor-pointer  border border-text_2 p-3 rounded-lg">
-            <div className="flex items-center gap-3">
-              <span className="text-2xl">
-                <FaGithub />
-              </span>
-              <p>Continue with Google</p>
-            </div>
-            <span className=" -translate-x-5 transition-all invisible duration-300 group-hover:visible  group-hover:translate-x-0 ">
-              <ArrowrightIcon />
-            </span>
-          </div>
+          <LoginWithGoogle />
+          <LoginWithGithub />
         </div>
 
         {/* Seperate */}
@@ -79,16 +100,31 @@ const SigupPage = () => {
             control={control}
             placeholder="Enter your username"
           />
+          {errors.username?.message && (
+            <p className="text-sm text-red-500 font-medium">
+              {errors.username?.message}
+            </p>
+          )}
           <InputField
             name="email"
             control={control}
             placeholder="Enter your email"
           />
+          {errors.email?.message && (
+            <p className="text-sm text-red-500 font-medium">
+              {errors.email?.message}
+            </p>
+          )}
           <InputPasswordToggle
             placeholder="Enter your password"
             name="password"
             control={control}
           ></InputPasswordToggle>
+          {errors.password?.message && (
+            <p className="text-sm text-red-500 font-medium">
+              {errors.password?.message}
+            </p>
+          )}
           <div className="mt-1">
             <p className="text-opacity-50 text-sm font-medium">
               Have an account?{" "}

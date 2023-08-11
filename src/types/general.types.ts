@@ -4,10 +4,15 @@ export type TSidebarLinks = {
   route: string;
 };
 
-export type InputTypes = {
+export type TUserSignup = {
   username: string;
-  email: string | number;
-  password: string | number;
+  email: string;
+  password: string;
+};
+
+export type TUserSignin = {
+  email: string;
+  password: string;
 };
 
 export type UserDataTypes = {

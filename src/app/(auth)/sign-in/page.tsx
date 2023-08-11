@@ -5,23 +5,45 @@ import React from "react";
 import Button from "@/components/button/Button";
 import { SubmitHandler, useForm } from "react-hook-form";
 import InputField, { InputPasswordToggle } from "@/components/input/Input";
-import { InputTypes } from "@/types/general.types";
+import { TUserSignin } from "@/types/general.types";
 import LoginWithGoogle from "@/components/login-method/LoginWithGoogle";
 import LoginWithGithub from "@/components/login-method/LoginWithGithub";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { SigninValidation } from "@/utils/validate";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "@/utils/firebase";
+import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
 /* ====================================================== */
 
 const SiginPage = () => {
-  const { handleSubmit, control } = useForm<InputTypes>({
+  const router = useRouter();
+  const {
+    handleSubmit,
+    control,
+    formState: { errors, isValid },
+  } = useForm<TUserSignin>({
+    resolver: zodResolver(SigninValidation),
     defaultValues: {
       email: "",
       password: "",
     },
   });
 
-  const onSubmit: SubmitHandler<InputTypes> = (data) => {
-    console.log(data);
+  const onSubmit: SubmitHandler<TUserSignin> = async (data) => {
+    if (!isValid) return;
+    try {
+      await signInWithEmailAndPassword(auth, data.email, data.password);
+      toast.success("Welcome to X!", {
+        theme: "dark",
+        autoClose: 2000,
+        pauseOnHover: false,
+      });
+      router.push("/");
+    } catch (error) {
+      console.log("");
+    }
   };
-
   return (
     <div className="h-screen  flex items-center justify-center w-full ">
       <div className="w-full shadow-blurPrimary gap-10 md:max-w-lg bg-secondaryDark p-5 rounded-lg">
@@ -53,11 +75,21 @@ const SiginPage = () => {
             control={control}
             placeholder="Enter your email"
           />
+          {errors.email?.message && (
+            <p className="text-sm text-red-500 font-medium">
+              {errors.email?.message}
+            </p>
+          )}
           <InputPasswordToggle
             placeholder="Enter your password"
             name="password"
             control={control}
           ></InputPasswordToggle>
+          {errors.password?.message && (
+            <p className="text-sm text-red-500 font-medium">
+              {errors.password?.message}
+            </p>
+          )}
           <div className="mt-1">
             <p className="text-opacity-50 text-sm font-medium">
               No account?{" "}

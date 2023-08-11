@@ -1,12 +1,11 @@
-import { InputTypes } from "@/types/general.types";
 import React, { useState } from "react";
 import { Control, useController } from "react-hook-form";
 import { IconEye, IconEyeSlash } from "../icons/Icon";
 import useToggle from "@/hooks/useToggleValue";
 
 interface InputFieldProps {
-  name: keyof InputTypes;
-  control: Control<InputTypes>;
+  name: string;
+  control: any;
   placeholder?: string;
   type?: string;
   children?: React.ReactNode;

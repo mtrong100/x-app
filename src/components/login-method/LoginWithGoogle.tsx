@@ -1,5 +1,10 @@
+import slugify from "slugify";
 import React from "react";
+import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { FcGoogle } from "react-icons/fc";
+import { auth, db } from "@/utils/firebase";
 import { ArrowrightIcon } from "../icons/Icon";
 import {
   doc,
@@ -8,11 +13,6 @@ import {
   setDoc,
   updateDoc,
 } from "firebase/firestore";
-import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-import { auth, db } from "@/utils/firebase";
-import { toast } from "react-toastify";
-import slugify from "slugify";
-import { useRouter } from "next/navigation";
 /* ====================================================== */
 
 const LoginWithGoogle = () => {
