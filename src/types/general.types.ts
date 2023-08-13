@@ -16,10 +16,25 @@ export type TUserSignin = {
 };
 
 export type UserDataTypes = {
+  uid: string;
   email: string;
   username: string;
   role: "user" | "admin";
   slug: string;
   photoURL: string;
   createdAt: any;
+};
+
+export type TPostData = {
+  postId: string;
+  content: string;
+  photos: string[];
+  userId: string;
+  createdAt: any;
+};
+
+export type TTabData = {
+  value: string;
+  name: string;
+  icon: JSX.Element;
 };

@@ -1,30 +1,21 @@
 "use client";
-import Image from "next/image";
-import Link from "next/link";
+import slugify from "slugify";
 import React from "react";
-import { FcGoogle } from "react-icons/fc";
-import { FaGithub } from "react-icons/fa";
-import { ArrowrightIcon } from "@/components/icons/Icon";
-import InputField, { InputPasswordToggle } from "@/components/input/Input";
-import Button from "@/components/button/Button";
-import { SubmitHandler, useForm } from "react-hook-form";
-import { TUserSignup } from "@/types/general.types";
-import {
-  addDoc,
-  collection,
-  doc,
-  serverTimestamp,
-  setDoc,
-} from "firebase/firestore";
-import { auth, db } from "@/utils/firebase";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { SignupValidation } from "@/utils/validate";
 import LoginWithGoogle from "@/components/login-method/LoginWithGoogle";
 import LoginWithGithub from "@/components/login-method/LoginWithGithub";
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import slugify from "slugify";
-import { toast } from "react-toastify";
+import Link from "next/link";
+import InputField, { InputPasswordToggle } from "@/components/input/Input";
+import Image from "next/image";
+import Button from "@/components/button/Button";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
+import { TUserSignup } from "@/types/general.types";
+import { toast } from "react-toastify";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { SignupValidation } from "@/utils/validate";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth, db } from "@/utils/firebase";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 /* ====================================================== */
 
 const SigupPage = () => {
@@ -42,6 +33,7 @@ const SigupPage = () => {
     },
   });
 
+  /* User sign up */
   const onSubmit: SubmitHandler<TUserSignup> = async (data) => {
     if (!isValid) return;
     try {
@@ -136,7 +128,11 @@ const SigupPage = () => {
               </Link>
             </p>
           </div>
-          <Button className="w-full uppercase mt-4" type="submit">
+          <Button
+            variant="primary"
+            className="w-full uppercase mt-4"
+            type="submit"
+          >
             continue
           </Button>
         </form>

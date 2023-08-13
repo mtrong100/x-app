@@ -5,6 +5,9 @@ import {
   ProfileIcon,
   SearchIcon,
 } from "@/components/icons/Icon";
+import { BsFilePostFill, BsFiletypeGif } from "react-icons/bs";
+import { AiOutlineHeart } from "react-icons/ai";
+/* ====================================================== */
 
 export const sidebarLinks = [
   {
@@ -31,5 +34,23 @@ export const sidebarLinks = [
     name: "Profile",
     icon: <ProfileIcon />,
     route: "/profile",
+  },
+];
+
+export const tabData = [
+  {
+    value: "post",
+    name: "Posts",
+    icon: <BsFilePostFill />,
+  },
+  {
+    value: "gif",
+    name: "Gifs",
+    icon: <BsFiletypeGif />,
+  },
+  {
+    value: "like",
+    name: "Likes",
+    icon: <AiOutlineHeart />,
   },
 ];

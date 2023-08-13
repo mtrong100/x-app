@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import { SearchIcon } from "../icons/Icon";
 import Image from "next/image";
+import Button from "../button/Button";
 
 const RightSidebar = () => {
   const [isInputFocused, setIsInputFocused] = useState<boolean>(false);
@@ -52,14 +53,10 @@ const RightSidebar = () => {
                     <span className="text-text_4 text-sm">@mitoya</span>
                   </div>
                 </div>
-                <span className="px-5 hover:opacity-80 font-medium text-sm cursor-pointer rounded-full py-1 bg-white text-black">
-                  Follow
-                </span>
+                <Button variant="secondary">Follow</Button>
               </li>
             ))}
-          <div className="flex  items-center justify-center cursor-pointer hover:bg-whiteSoft w-full p-2 rounded-full border border-text_1 hover:text-black font-semibold transition-all">
-            See more
-          </div>
+          <Button variant="outline-secondary">See more</Button>
         </ul>
       </div>
     </div>

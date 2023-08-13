@@ -6,7 +6,7 @@ import { Inter } from "next/font/google";
 import "react-toastify/dist/ReactToastify.css";
 import "../globals.scss";
 import { ReduxProvider } from "@/providers/ReduxProvider";
-
+import NextuiProvider from "@/providers/NextuiProvider";
 /* ====================================================== */
 
 const inter = Inter({ subsets: ["latin"] });
@@ -26,15 +26,15 @@ export default function RootLayout({
       <body className={inter.className}>
         <ToastProvider>
           <ReduxProvider>
-            <main className="flex flex-row w-full max-w-[1300px] mx-auto">
-              <div className="flex flex-row w-full flex-1">
+            <NextuiProvider>
+              <main className="flex flex-row w-full max-w-[1300px] mx-auto">
                 <LeftSidebar />
-                <section className="w-full max-w-4xl mx-auto flex-1 ">
+                <section className="w-full max-w-2xl flex-1 border-r border-text_2">
                   {children}
                 </section>
-              </div>
-              <RightSidebar />
-            </main>
+                <RightSidebar />
+              </main>
+            </NextuiProvider>
           </ReduxProvider>
         </ToastProvider>
       </body>

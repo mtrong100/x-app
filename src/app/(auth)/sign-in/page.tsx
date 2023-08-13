@@ -30,6 +30,7 @@ const SiginPage = () => {
     },
   });
 
+  /* User sign in */
   const onSubmit: SubmitHandler<TUserSignin> = async (data) => {
     if (!isValid) return;
     try {
@@ -101,7 +102,11 @@ const SiginPage = () => {
               </Link>
             </p>
           </div>
-          <Button className="w-full uppercase mt-4" type="submit">
+          <Button
+            variant="primary"
+            className="w-full uppercase mt-4"
+            type="submit"
+          >
             continue
           </Button>
         </form>

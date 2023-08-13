@@ -8,6 +8,7 @@ export interface AuthState {
 
 const initialState: AuthState = {
   user: {
+    uid: "",
     email: "",
     username: "",
     role: "user",
@@ -31,5 +32,4 @@ export const authSlice = createSlice({
 });
 
 export const { setUser, clearUser } = authSlice.actions;
-
 export default authSlice.reducer;
