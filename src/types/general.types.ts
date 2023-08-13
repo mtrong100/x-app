@@ -33,8 +33,20 @@ export type TPostData = {
   createdAt: any;
 };
 
+export type TLikeData = {
+  id: string;
+  postId: string;
+  userId: string;
+  isLiked: boolean;
+};
+
 export type TTabData = {
   value: string;
   name: string;
   icon: JSX.Element;
 };
+
+export interface PostActionProps {
+  userId: string;
+  postId: string;
+}

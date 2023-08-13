@@ -9,13 +9,11 @@ import { db } from "@/utils/firebase";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
 import "swiper/css";
-import {
-  CmtIcon,
-  HeartIcon,
-  RetweetIcon,
-  ShareIcon,
-} from "@/components/icons/Icon";
 import Link from "next/link";
+import LikePost from "./LikePost";
+import RepostPost from "./RepostPost";
+import SavePost from "./SavePost";
+import CommentPost from "./CommentPost";
 /* ====================================================== */
 
 interface PostItemProps extends TPostData {}
@@ -66,47 +64,27 @@ const PostItem = ({
             alt="user-avatar"
           />
         </div>
-        <div className="flex gap-1 items-center flex-1">
+        <div className="flex items-center flex-1 gap-1">
           <Link
             href={`/${user.slug}`}
             className="font-semibold text-white hover:underline"
           >
             {user?.username}
           </Link>
-          <span className="text-text_4 text-sm">{`@${user.slug}`}</span>
-          <span className="font-bold text-lg">.</span>
-          <span className="text-text_4 text-sm">{date}</span>
+          <span className="text-sm text-text_4">{`@${user.slug}`}</span>
+          <span className="text-lg font-bold">.</span>
+          <span className="text-sm text-text_4">{date}</span>
         </div>
       </div>
       <div className="mt-3">
         <p className="text-sm">{content}</p>
         {photos && photos.length > 0 && <PostSlide photos={photos} />}
       </div>
-      <div className="flex items-center gap-5 justify-between py-3 px-5">
-        <div className="flex items-center gap-3 ">
-          <span>
-            <CmtIcon />
-          </span>
-          <span>19</span>
-        </div>
-        <div className="flex items-center gap-3">
-          <span>
-            <HeartIcon />
-          </span>
-          <span>19</span>
-        </div>
-        <div className="flex items-center gap-3">
-          <span>
-            <RetweetIcon />
-          </span>
-          <span>19</span>
-        </div>
-        <div className="flex items-center gap-3">
-          <span>
-            <ShareIcon />
-          </span>
-          <span>19</span>
-        </div>
+      <div className="flex items-center gap-10 px-3 py-2">
+        <CommentPost />
+        <LikePost userId={userId} postId={postId} />
+        <RepostPost />
+        <SavePost />
       </div>
     </div>
   );
@@ -128,7 +106,7 @@ function PostSlide({ photos }: { photos: string[] }) {
       {photos?.map((image, index) => (
         <SwiperSlide className="mt-4 select-none" key={index}>
           <Image
-            className="rounded-md w-full h-full object-contain"
+            className="object-contain w-full h-full rounded-xl"
             priority
             src={image}
             width={500}
