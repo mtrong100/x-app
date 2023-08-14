@@ -14,17 +14,14 @@ import LikePost from "./LikePost";
 import RepostPost from "./RepostPost";
 import SavePost from "./SavePost";
 import CommentPost from "./CommentPost";
+import Skeleton from "@/components/loading/Skeleton";
 /* ====================================================== */
 
-interface PostItemProps extends TPostData {}
+interface PostItemProps {
+  data: TPostData;
+}
 
-const PostItem = ({
-  content,
-  photos,
-  userId,
-  postId,
-  createdAt,
-}: PostItemProps) => {
+const PostItem = ({ data }: PostItemProps) => {
   const [user, setUser] = useState<UserDataTypes>({
     uid: "",
     email: "",
@@ -34,12 +31,13 @@ const PostItem = ({
     photoURL: "",
     createdAt: "",
   });
-  const date = formatDate(createdAt);
+  const date = formatDate(data?.createdAt);
 
   // Get user data
   useEffect(() => {
     async function fetchUser() {
-      const userDocRef = doc(db, "users", userId);
+      if (!data.userId) return;
+      const userDocRef = doc(db, "users", data.userId);
       try {
         const userDocSnapshot = await getDoc(userDocRef);
         if (userDocSnapshot.exists()) {
@@ -50,7 +48,7 @@ const PostItem = ({
       }
     }
     fetchUser();
-  }, [userId]);
+  }, [data.userId]);
 
   return (
     <div className="border-b border-text_2">
@@ -77,12 +75,14 @@ const PostItem = ({
         </div>
       </div>
       <div className="mt-3">
-        <p className="text-sm">{content}</p>
-        {photos && photos.length > 0 && <PostSlide photos={photos} />}
+        <p className="text-sm">{data?.content}</p>
+        {data?.photos && data?.photos.length > 0 && (
+          <PostSlide data={data?.photos} />
+        )}
       </div>
       <div className="flex items-center gap-10 px-3 py-2">
-        <CommentPost />
-        <LikePost userId={userId} postId={postId} />
+        <CommentPost data={data} />
+        <LikePost userId={data?.userId} postId={data?.postId} />
         <RepostPost />
         <SavePost />
       </div>
@@ -92,7 +92,7 @@ const PostItem = ({
 
 export default PostItem;
 
-function PostSlide({ photos }: { photos: string[] }) {
+function PostSlide({ data }: { data: string[] }) {
   return (
     <Swiper
       slidesPerView={1}
@@ -103,7 +103,7 @@ function PostSlide({ photos }: { photos: string[] }) {
       modules={[Navigation]}
       className=" mySwiper"
     >
-      {photos?.map((image, index) => (
+      {data?.map((image, index) => (
         <SwiperSlide className="mt-4 select-none" key={index}>
           <Image
             className="object-contain w-full h-full rounded-xl"
@@ -118,3 +118,21 @@ function PostSlide({ photos }: { photos: string[] }) {
     </Swiper>
   );
 }
+
+export const PostItemSkeleton = () => {
+  return (
+    <div className="pb-4 border-b-2 border-darkSaga">
+      <div className="flex items-center flex-1 gap-3">
+        <Skeleton className="w-[42px] h-[42px] rounded-full flex-shrink-0 select-none" />
+        <div className="flex items-center flex-1 gap-1">
+          <Skeleton className="w-32 h-6 rounded-md" />
+        </div>
+      </div>
+      <div className="mt-3">
+        <Skeleton className="w-full h-5 rounded-md" />
+        <Skeleton className="w-[350px] h-5 mt-2 rounded-md" />
+        <Skeleton className="mt-4  rounded-lg w-full h-[300px]" />
+      </div>
+    </div>
+  );
+};

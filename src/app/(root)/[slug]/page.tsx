@@ -82,17 +82,19 @@ const UserSlugPage = () => {
 
   return (
     <section>
-      <header className="bg-secondaryDark p-3">
+      <header className="p-3 bg-secondaryDark">
         <div className="flex items-center gap-5">
           <span className="flex items-center justify-center w-[35px] h-[35px] rounded-full hover:bg-darkHover cursor-pointer">
             <BsArrowLeftShort size={30} />
           </span>
           <div>
-            <h1 className="font-bold text-xl">{user?.username}</h1>
+            <h1 className="text-xl font-bold">{user?.username}</h1>
             <p className="text-sm font-medium text-text_3">2 posts</p>
           </div>
         </div>
       </header>
+
+      {/* User avatar & wallpaper */}
       <div className="relative">
         <div className="w-full h-[200px] bg-darkSaga">
           <Image
@@ -113,34 +115,35 @@ const UserSlugPage = () => {
           />
         </div>
       </div>
-      <div className="mt-20 px-10">
-        <h1 className="font-bold text-xl text-white">{user?.username}</h1>
-        <p className="text-text_3 font-medium">{`@${user?.slug}`}</p>
 
-        <div className="flex mt-4 items-center gap-2 text-text_3 text-sm">
+      {/* User info */}
+      <div className="px-10 mt-20">
+        <h1 className="text-xl font-bold text-white">{user?.username}</h1>
+        <p className="font-medium text-text_3">{`@${user?.slug}`}</p>
+
+        <div className="flex items-center gap-2 mt-4 text-sm text-text_3">
           <span className="text-xl">
             <BiCalendar />
           </span>
           <p>Joined {date}</p>
         </div>
 
-        <div className="text-sm mt-4 flex items-center gap-4">
+        <div className="flex items-center gap-4 mt-4 text-sm">
           <div className="flex items-center gap-2">
-            <span className="text-white font-semibold">2</span>
+            <span className="font-semibold text-white">2</span>
             <p className="text-text_3">Following</p>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-white font-semibold">2</span>
+            <span className="font-semibold text-white">2</span>
             <p className="text-text_3">Followers</p>
           </div>
         </div>
       </div>
 
-      {/* Tab Indicator */}
       <TabIndicator />
 
-      {/* Render posts */}
-      <div className="flex flex-col gap-10 mt-3 p-5">
+      {/* Posts */}
+      <section className="flex flex-col gap-10 p-5 mt-3">
         {postList &&
           postList.length > 0 &&
           postList.map((item: TPostData) => {
@@ -155,7 +158,7 @@ const UserSlugPage = () => {
               />
             );
           })}
-      </div>
+      </section>
     </section>
   );
 };
@@ -164,7 +167,7 @@ const TabIndicator = () => {
   const [tabSelected, setTabSelected] = useState<string>("post");
 
   return (
-    <div className="grid grid-cols-3 mt-5  border-b border-text_2">
+    <div className="grid grid-cols-3 mt-5 border-b border-text_2">
       {tabData.map((item: TTabData) => (
         <div
           key={item.value}

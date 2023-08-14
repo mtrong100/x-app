@@ -1,19 +1,18 @@
 "use client";
 import Button from "@/components/button/Button";
-import {
-  CmtIcon,
-  HeartIcon,
-  RetweetIcon,
-  ShareIcon,
-} from "@/components/icons/Icon";
 import Loading from "@/components/loading/Loading";
-import PostItem from "@/modules/post/PostItem";
+import PostItem, { PostItemSkeleton } from "@/modules/post/PostItem";
 import { clearUser, setUser } from "@/redux/features/authSlice";
 import { setPosts } from "@/redux/features/postSlice";
 import { AppDispatch, useAppSelector } from "@/redux/store";
 import { TPostData } from "@/types/general.types";
 import { auth, db } from "@/utils/firebase";
 import { onAuthStateChanged } from "firebase/auth";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import { v4 } from "uuid";
 import {
   collection,
   where,
@@ -21,10 +20,6 @@ import {
   onSnapshot,
   orderBy,
 } from "firebase/firestore";
-import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
-import { useDispatch } from "react-redux";
 /* ================================================================== */
 
 export default function Home() {
@@ -32,6 +27,7 @@ export default function Home() {
   const { user } = useAppSelector((state) => state.auth);
   const { posts: postList } = useAppSelector((state) => state.post);
   const router = useRouter();
+  const [loading, setLoading] = useState(true);
 
   // Watch user
   useEffect(() => {
@@ -63,11 +59,12 @@ export default function Home() {
 
   // Get all posts from firebase
   useEffect(() => {
+    setLoading(true);
     const postRef = query(
       collection(db, "posts"),
       orderBy("createdAt", "desc")
     );
-    onSnapshot(postRef, (snapshot) => {
+    const unsubscribe = onSnapshot(postRef, (snapshot) => {
       let results: TPostData[] = [];
       snapshot.forEach((doc) => {
         const postData = doc.data();
@@ -82,25 +79,28 @@ export default function Home() {
         }
       });
       dispatch(setPosts(results));
+      setLoading(false);
     });
+
+    return () => unsubscribe();
   }, [dispatch]);
 
-  if (!user) return <Loading size="w-28 h-28" border="border-t-4 border-4" />;
   return (
     <>
-      <div className="sticky top-0 bg-darkGraphite bg-opacity-70 backdrop-blur-md z-20 ">
-        <h1 className="font-semibold text-2xl px-5 pt-5 pb-3">Home</h1>
-        <div className=" flex items-center border-b border-text_2 ">
-          <div className="flex-1 text-center relative p-3 text-white hover:bg-white hover:bg-opacity-5 cursor-pointer font-medium">
+      <header className="sticky top-0 z-20 bg-darkGraphite bg-opacity-70 backdrop-blur-md ">
+        <h1 className="px-5 pt-5 pb-3 text-2xl font-semibold">Home</h1>
+        <div className="flex items-center border-b border-text_2">
+          <div className="relative flex-1 p-3 font-medium text-center text-white cursor-pointer hover:bg-white hover:bg-opacity-5">
             For you
           </div>
-          <div className="flex-1 text-center text-white p-3 hover:bg-white hover:bg-opacity-5 cursor-pointer font-medium">
+          <div className="flex-1 p-3 font-medium text-center text-white cursor-pointer hover:bg-white hover:bg-opacity-5">
             Following
           </div>
         </div>
-      </div>
+      </header>
 
-      <div className="border-b border-text_2 p-5">
+      {/* User input */}
+      <section className="p-5 border-b border-text_2">
         <div className="flex items-start gap-2">
           <div className="w-[45px] hover:opacity-70 h-[45px] rounded-full flex-shrink-0">
             <Image
@@ -112,30 +112,33 @@ export default function Home() {
             />
           </div>
           <textarea
-            className="flex-1 p-2 bg-transparent outline-none  resize-none"
+            className="flex-1 p-2 bg-transparent outline-none resize-none"
             placeholder="What is happening?!"
           />
         </div>
-        <Button className="rounded-full py-2 ml-auto">Post</Button>
-      </div>
+        <Button className="py-2 ml-auto rounded-full">Post</Button>
+      </section>
 
-      {/* Post item */}
-      <div className="flex flex-col gap-10 mt-3 p-5">
-        {postList &&
+      {/* Skeleton loading */}
+      {loading && (
+        <section className="flex flex-col gap-10 p-5 ">
+          {Array(3)
+            .fill(0)
+            .map((index: number) => (
+              <PostItemSkeleton key={v4()} />
+            ))}
+        </section>
+      )}
+
+      {/* Rendering posts */}
+      <section className="flex flex-col gap-10 p-5 ">
+        {!loading &&
+          postList &&
           postList.length > 0 &&
           postList.map((item: TPostData) => {
-            return (
-              <PostItem
-                key={item.postId}
-                postId={item.postId}
-                content={item.content}
-                photos={item.photos}
-                userId={item.userId}
-                createdAt={item.createdAt}
-              />
-            );
+            return <PostItem key={item.postId} data={item} />;
           })}
-      </div>
+      </section>
     </>
   );
 }

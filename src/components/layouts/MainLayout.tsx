@@ -1,0 +1,26 @@
+import NextuiProvider from "@/providers/NextuiProvider";
+import ToastProvider from "@/providers/ToastProvider";
+import React from "react";
+import LeftSidebar from "../shared/LeftSidebar";
+import RightSidebar from "../shared/RightSidebar";
+/* ====================================================== */
+
+const MainLayout = ({ children }: { children?: React.ReactNode }) => {
+  return (
+    <>
+      <ToastProvider>
+        <NextuiProvider>
+          <main className="flex flex-row w-full max-w-[1300px] mx-auto">
+            <LeftSidebar />
+            <section className="flex-1 w-full max-w-2xl border-r border-text_2">
+              {children}
+            </section>
+            <RightSidebar />
+          </main>
+        </NextuiProvider>
+      </ToastProvider>
+    </>
+  );
+};
+
+export default MainLayout;

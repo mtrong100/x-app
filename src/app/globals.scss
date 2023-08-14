@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -67,7 +68,7 @@
   white-space: nowrap;
 }
 
-/* Custom swiper */
+/* Custom swiper variables */
 :root {
   --swiper-navigation-size: 15px !important;
   --swiper-theme-color: #475be8 !important;
@@ -84,6 +85,7 @@
   --swiper-pagination-bullet-vertical-gap: 6px;
 }
 
+/* Custom swiper button */
 .swiper-button-next,
 .swiper-button-prev {
   background-color: white;
@@ -99,7 +101,6 @@
 .swiper-button-prev:hover {
   opacity: 0.8;
 }
-
 .swiper-button-next::after,
 .swiper-button-prev::after {
   font-weight: 600;

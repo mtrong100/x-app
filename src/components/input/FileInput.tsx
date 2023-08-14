@@ -9,7 +9,7 @@ const FileInput = ({ handleSelectImage }: FileInputProps) => {
     <div className="flex items-center space-x-2">
       <label
         htmlFor="fileInput"
-        className="cursor-pointer hover:bg-white hover:bg-opacity-5 text-sm font-medium bg-primaryDark rounded-md px-4 py-2 border border-gray-300 shadow-sm hover:shadow-md"
+        className="px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg shadow-sm cursor-pointer hover:bg-white hover:bg-opacity-5 bg-primaryDark hover:shadow-md"
       >
         Choose File
       </label>

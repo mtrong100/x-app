@@ -10,6 +10,9 @@ module.exports = {
     "./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
+    fontFamily: {
+      primary: "Inter",
+    },
     extend: {
       colors: {
         /* Dark-theme */
@@ -46,7 +49,7 @@ module.exports = {
       },
       backgroundImage: {
         primaryGradient: "linear-gradient(to right, #17181e, #1f2129)",
-        // primaryGradient: "linear-gradient(to left, #159957, #155799)",
+        loadingGradient: "linear-gradient(to right, #272934, #272934)",
       },
       boxShadow: {
         blurPrimary: "0px 0px 8px 8px rgba(71, 91, 232, 0.3)",
