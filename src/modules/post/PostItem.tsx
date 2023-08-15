@@ -3,7 +3,7 @@ import Image from "next/image";
 import { TPostData, UserDataTypes } from "@/types/general.types";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
-import { formatDate } from "@/utils/reuse-function";
+import { formatDateTime } from "@/utils/reuse-function";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "@/utils/firebase";
 import "swiper/css/pagination";
@@ -31,7 +31,7 @@ const PostItem = ({ data }: PostItemProps) => {
     photoURL: "",
     createdAt: "",
   });
-  const date = formatDate(data?.createdAt);
+  const date = formatDateTime(data?.createdAt);
 
   // Get user data
   useEffect(() => {

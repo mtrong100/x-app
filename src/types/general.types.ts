@@ -50,3 +50,12 @@ export interface PostActionProps {
   userId: string;
   postId: string;
 }
+
+export type TComment = {
+  commentId: string;
+  comment: string;
+  commentImg: string;
+  userId: string;
+  postId: string;
+  createdAt: any;
+};

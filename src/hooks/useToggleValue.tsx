@@ -9,6 +9,7 @@ export default function useToggle() {
 
   return {
     toggleValue,
+    setToggleValue,
     handleToggleValue,
   };
 }

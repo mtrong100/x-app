@@ -8,7 +8,7 @@ import { TPostData, TTabData } from "@/types/general.types";
 import { tabData } from "@/constants/data";
 import { setUser } from "@/redux/features/authSlice";
 import { setPosts } from "@/redux/features/postSlice";
-import { formatDate } from "@/utils/reuse-function";
+import { formatDateTime } from "@/utils/reuse-function";
 import { db } from "@/utils/firebase";
 import { BsArrowLeftShort } from "react-icons/bs";
 import { BiCalendar } from "react-icons/bi";
@@ -28,7 +28,7 @@ const UserSlugPage = () => {
   const { user } = useAppSelector((state) => state.auth);
   const { slug } = useParams();
   const { posts: postList } = useAppSelector((state) => state.post);
-  const date = formatDate(user?.createdAt);
+  const date = formatDateTime(user?.createdAt);
 
   // Fetch user data
   useEffect(() => {

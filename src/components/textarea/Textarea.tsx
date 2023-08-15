@@ -23,7 +23,7 @@ const Textarea: React.FC<TextareaProps> = ({
       <textarea
         {...field}
         placeholder={placeholder}
-        className="block w-full px-3 resize-none py-2 mt-1 text-gray-700 bg-white border rounded-md shadow-sm focus:ring focus:ring-opacity-50"
+        className="block w-full px-3 py-2 mt-1 text-gray-700 bg-white border rounded-md shadow-sm resize-none focus:ring focus:ring-opacity-50"
       ></textarea>
     </div>
   );

@@ -24,8 +24,9 @@ import Link from "next/link";
 import TextareaAutosize from "react-textarea-autosize";
 import useUploadImage from "@/hooks/useUploadImage";
 import Loading from "@/components/loading/Loading";
-import { formatDate } from "@/utils/reuse-function";
+import { formatDateTime } from "@/utils/reuse-function";
 import CommentList from "./CommentList";
+import useToggle from "@/hooks/useToggleValue";
 /* ====================================================== */
 
 type TUserData = {
@@ -53,7 +54,9 @@ const CreateComment = ({
   } = useTextareaChange();
   const { user } = useAppSelector((state) => state.auth);
   const { postItemData: currentPost } = useAppSelector((state) => state.post);
-  const date = formatDate(currentPost.createdAt);
+  const date = formatDateTime(currentPost.createdAt);
+  const { toggleValue: isInputFocused, setToggleValue: setIsInputFocused } =
+    useToggle();
   const [postOwner, setPostOwner] = useState<TUserData>({
     email: "",
     username: "",
@@ -62,8 +65,6 @@ const CreateComment = ({
     photoURL: "",
     createdAt: null,
   });
-
-  console.log(postOwner);
 
   // Fetch data of post owner
   useEffect(() => {
@@ -88,13 +89,13 @@ const CreateComment = ({
 
   // Create new comment
   const createComment = async () => {
-    if (!currentPost.postId && !currentPost.userId) return;
+    if (!currentPost.postId && !user.uid) return;
     const commentRef = collection(db, "posts", currentPost?.postId, "comments");
     await addDoc(commentRef, {
       comment: commentVal,
       commentImg: image,
       postId: currentPost.postId,
-      userId: currentPost.userId,
+      userId: user.uid,
       createdAt: serverTimestamp(),
     });
     setCommentVal("");
@@ -199,8 +200,8 @@ const CreateComment = ({
                 </div>
 
                 {/* Add comment here */}
-                <section className="flex flex-col gap-4 ">
-                  <div className="relative flex items-start w-full gap-3">
+                <section className="flex flex-col gap-4">
+                  <div className="relative flex items-start w-full gap-3 pb-3">
                     <div className="w-[45px] border-2 border-primaryColor h-[45px] rounded-full flex-shrink-0 select-none">
                       <Image
                         className="rounded-full select-none img-cover"
@@ -212,11 +213,21 @@ const CreateComment = ({
                         alt="user-avatar"
                       />
                     </div>
-                    <div className="relative w-full">
+
+                    {/* User comment here */}
+                    <div
+                      className={`${
+                        isInputFocused
+                          ? "border-primaryColor"
+                          : "border-transparent"
+                      } relative w-full min-h-[88px] border-2 bg-secondaryDark p-3 rounded-lg`}
+                    >
                       <TextareaAutosize
                         value={commentVal}
                         onChange={handleChange}
-                        className="w-full mb-2 bg-transparent outline-none resize-none font-primary"
+                        onFocus={() => setIsInputFocused(true)}
+                        onBlur={() => setIsInputFocused(false)}
+                        className="w-full mb-2 bg-transparent outline-none resize-none placeholder:text-text_3"
                         placeholder="Post your reply..."
                       />
                       {!image && progress === 0 && <></>}
@@ -242,6 +253,7 @@ const CreateComment = ({
                         </div>
                       )}
                     </div>
+
                     {/* Line */}
                     <div className="absolute top-0 translate-x-5 -z-10 w-[2px] rounded-full h-full bg-text_3"></div>
                   </div>

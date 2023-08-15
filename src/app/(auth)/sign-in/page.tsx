@@ -42,12 +42,12 @@ const SiginPage = () => {
       });
       router.push("/");
     } catch (error) {
-      console.log("");
+      console.log(error);
     }
   };
   return (
-    <div className="h-screen  flex items-center justify-center w-full ">
-      <div className="w-full shadow-blurPrimary gap-10 md:max-w-lg bg-secondaryDark p-5 rounded-lg">
+    <div className="flex items-center justify-center w-full h-screen ">
+      <div className="w-full gap-10 p-5 rounded-lg shadow-blurPrimary md:max-w-lg bg-secondaryDark">
         <Link href="/">
           <Image
             className="rounded-full w-[50px] h-[50px] flex items-center justify-center hover:bg-darkHover"
@@ -57,15 +57,15 @@ const SiginPage = () => {
             height={40}
           />
         </Link>
-        <h1 className="mt-3 mb-2 font-bold text-3xl capitalize">Sign in</h1>
+        <h1 className="mt-3 mb-2 text-3xl font-bold capitalize">Sign in</h1>
         <p>Continue with...</p>
-        <div className="w-full mt-5 flex flex-col gap-3">
+        <div className="flex flex-col w-full gap-3 mt-5">
           <LoginWithGoogle />
           <LoginWithGithub />
         </div>
         {/* Seperate */}
         <div className="w-full relative my-5 h-[1px] bg-text_3">
-          <span className="absolute top-0 bg-secondaryDark px-2 left-2/4 -translate-x-2/4 -translate-y-2/4">
+          <span className="absolute top-0 px-2 bg-secondaryDark left-2/4 -translate-x-2/4 -translate-y-2/4">
             Or
           </span>
         </div>
@@ -77,7 +77,7 @@ const SiginPage = () => {
             placeholder="Enter your email"
           />
           {errors.email?.message && (
-            <p className="text-sm text-red-500 font-medium">
+            <p className="text-sm font-medium text-red-500">
               {errors.email?.message}
             </p>
           )}
@@ -87,12 +87,12 @@ const SiginPage = () => {
             control={control}
           ></InputPasswordToggle>
           {errors.password?.message && (
-            <p className="text-sm text-red-500 font-medium">
+            <p className="text-sm font-medium text-red-500">
               {errors.password?.message}
             </p>
           )}
           <div className="mt-1">
-            <p className="text-opacity-50 text-sm font-medium">
+            <p className="text-sm font-medium text-opacity-50">
               No account?{" "}
               <Link
                 href="/sign-up"
@@ -104,7 +104,7 @@ const SiginPage = () => {
           </div>
           <Button
             variant="primary"
-            className="w-full uppercase mt-4"
+            className="w-full mt-4 uppercase"
             type="submit"
           >
             continue

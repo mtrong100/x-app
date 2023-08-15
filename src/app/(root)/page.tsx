@@ -24,7 +24,7 @@ import {
 
 export default function Home() {
   const dispatch = useDispatch<AppDispatch>();
-  const { user } = useAppSelector((state) => state.auth);
+  // const { user } = useAppSelector((state) => state.auth);
   const { posts: postList } = useAppSelector((state) => state.post);
   const router = useRouter();
   const [loading, setLoading] = useState(true);

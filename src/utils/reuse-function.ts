@@ -1,7 +1,11 @@
-// Format date
-export const formatDate = (date: { seconds: number }) => {
-  const formattedDate = date?.seconds
-    ? new Date(date.seconds * 1000).toLocaleDateString("vi-VI")
-    : "Unknown";
-  return formattedDate;
+import { formatDistanceToNow } from "date-fns";
+
+export const formatDateTime = (data: any) => {
+  if (!data) return;
+  const createdAtDate = data.toDate();
+  const date = formatDistanceToNow(createdAtDate, {
+    addSuffix: true,
+  });
+
+  return date;
 };

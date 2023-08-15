@@ -26,7 +26,17 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <ReduxProvider>
-          <MainLayout>{children}</MainLayout>
+          <ToastProvider>
+            <NextuiProvider>
+              <main className="flex flex-row w-full max-w-[1300px] mx-auto">
+                <LeftSidebar />
+                <section className="flex-1 w-full max-w-2xl border-r border-text_2">
+                  {children}
+                </section>
+                <RightSidebar />
+              </main>
+            </NextuiProvider>
+          </ToastProvider>
         </ReduxProvider>
       </body>
     </html>
