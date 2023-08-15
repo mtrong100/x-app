@@ -83,11 +83,11 @@ const CreatePost = ({
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader className="flex flex-col gap-1 text-xl  text-white font-semibold">
+              <ModalHeader className="flex flex-col gap-1 text-xl font-semibold text-white">
                 Create your new post
               </ModalHeader>
               <ModalBody>
-                <div className="flex items-start gap-3 h-full">
+                <div className="flex items-start h-full gap-3">
                   <div className="w-[38px] h-[38px] rounded-full flex-shrink-0">
                     <Image
                       src="/default-avatar.jpg"
@@ -118,7 +118,7 @@ const CreatePost = ({
                     images.map((image, index) => (
                       <div
                         key={index}
-                        className="rounded-md relative w-full h-full"
+                        className="relative w-full h-full rounded-md"
                       >
                         <Image
                           priority
@@ -137,7 +137,7 @@ const CreatePost = ({
                       </div>
                     ))}
                 </div>
-                {progress === 0 && images.length === 0 && <div></div>}
+                {progress === 0 && images.length === 0 && <></>}
                 {progress !== 0 && images.length === 0 && (
                   <div className="flex items-center justify-center py-2">
                     <CircularProgress
@@ -162,7 +162,7 @@ const CreatePost = ({
                   </Button>
                   <Button
                     onClick={createPost}
-                    className="bg-primaryColor text-white"
+                    className="text-white bg-primaryColor"
                     onPress={onClose}
                   >
                     Post

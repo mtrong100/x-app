@@ -2,9 +2,10 @@ import React, { ChangeEvent, useState } from "react";
 
 interface FileInputProps {
   handleSelectImage: (e: ChangeEvent<HTMLInputElement>) => void;
+  multiple?: boolean;
 }
 
-const FileInput = ({ handleSelectImage }: FileInputProps) => {
+const FileInput = ({ handleSelectImage, multiple = true }: FileInputProps) => {
   return (
     <div className="flex items-center space-x-2">
       <label
@@ -18,7 +19,7 @@ const FileInput = ({ handleSelectImage }: FileInputProps) => {
         type="file"
         className="hidden-input"
         onChange={handleSelectImage}
-        multiple
+        multiple={multiple}
       />
     </div>
   );

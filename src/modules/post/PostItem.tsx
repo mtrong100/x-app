@@ -74,12 +74,16 @@ const PostItem = ({ data }: PostItemProps) => {
           <span className="text-sm text-text_4">{date}</span>
         </div>
       </div>
+
+      {/* Content and images */}
       <div className="mt-3">
         <p className="text-sm">{data?.content}</p>
         {data?.photos && data?.photos.length > 0 && (
           <PostSlide data={data?.photos} />
         )}
       </div>
+
+      {/* Post action */}
       <div className="flex items-center gap-10 px-3 py-2">
         <CommentPost data={data} />
         <LikePost userId={data?.userId} postId={data?.postId} />
@@ -104,7 +108,7 @@ function PostSlide({ data }: { data: string[] }) {
       className=" mySwiper"
     >
       {data?.map((image, index) => (
-        <SwiperSlide className="mt-4 select-none" key={index}>
+        <SwiperSlide className="mt-4 select-none rounded-xl" key={index}>
           <Image
             className="object-contain w-full h-full rounded-xl"
             priority
