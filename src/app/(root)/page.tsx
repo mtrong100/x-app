@@ -24,16 +24,17 @@ import {
 
 export default function Home() {
   const dispatch = useDispatch<AppDispatch>();
-  // const { user } = useAppSelector((state) => state.auth);
+  const { user } = useAppSelector((state) => state.auth);
   const { posts: postList } = useAppSelector((state) => state.post);
   const router = useRouter();
   const [loading, setLoading] = useState(true);
+
+  // console.log(user);
 
   // Watch user
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        const uid = user.uid;
         const docRef = query(
           collection(db, "users"),
           where("email", "==", user.email)
@@ -44,7 +45,7 @@ export default function Home() {
             if (!userData) return;
             dispatch(
               setUser({
-                uid,
+                uid: doc.id,
                 ...userData,
               })
             );

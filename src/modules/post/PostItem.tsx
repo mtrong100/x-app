@@ -16,6 +16,7 @@ import SavePost from "./SavePost";
 import CommentPost from "./CommentPost";
 import Skeleton from "@/components/loading/Skeleton";
 import { Autoplay } from "swiper/modules";
+import { v4 } from "uuid";
 /* ====================================================== */
 
 interface PostItemProps {
@@ -83,6 +84,7 @@ const PostItem = ({ data }: PostItemProps) => {
         {data?.photos && data?.photos.length === 1 ? (
           <div className="w-full h-full mt-2">
             <Image
+              key={v4()}
               className="img-cover rounded-xl"
               priority
               src={data?.photos[0] || "https://source.unsplash.com/random"}

@@ -33,6 +33,7 @@ const CreatePost = ({
 
   // Create new post
   const createPost = async () => {
+    if (!inputVal.trim() || !images) return;
     const postRef = collection(db, "posts");
     await addDoc(postRef, {
       content: inputVal,

@@ -1,9 +1,10 @@
-import { TPostData } from "@/types/general.types";
+import { TComment, TPostData } from "@/types/general.types";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface PostState {
   posts: TPostData[];
   postItemData: TPostData;
+  commentItemData: TComment;
 }
 
 const initialState: PostState = {
@@ -14,6 +15,14 @@ const initialState: PostState = {
     photos: [],
     userId: "",
     createdAt: "",
+  },
+  commentItemData: {
+    commentId: "",
+    comment: "",
+    commentImg: "",
+    userId: "",
+    postId: "",
+    createdAt: null,
   },
 };
 
@@ -27,8 +36,12 @@ export const postSlice = createSlice({
     storedPostData: (state, action: PayloadAction<TPostData>) => {
       state.postItemData = action.payload;
     },
+    storedCommentData: (state, action: PayloadAction<TComment>) => {
+      state.commentItemData = action.payload;
+    },
   },
 });
 
-export const { setPosts, storedPostData } = postSlice.actions;
+export const { setPosts, storedPostData, storedCommentData } =
+  postSlice.actions;
 export default postSlice.reducer;

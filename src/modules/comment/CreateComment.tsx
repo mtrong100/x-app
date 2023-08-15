@@ -45,18 +45,9 @@ const CreateComment = ({
   isOpen: boolean;
   onClose: () => void;
 }) => {
-  const { image, setImage, progress, handleSelectImage, handleDeleteImage } =
-    useUploadImage();
-  const {
-    handleChange,
-    inputVal: commentVal,
-    setInputVal: setCommentVal,
-  } = useTextareaChange();
   const { user } = useAppSelector((state) => state.auth);
   const { postItemData: currentPost } = useAppSelector((state) => state.post);
   const date = formatDateTime(currentPost.createdAt);
-  const { toggleValue: isInputFocused, setToggleValue: setIsInputFocused } =
-    useToggle();
   const [postOwner, setPostOwner] = useState<TUserData>({
     email: "",
     username: "",
@@ -65,6 +56,22 @@ const CreateComment = ({
     photoURL: "",
     createdAt: null,
   });
+
+  /* ========================= Custom hooks =====>> */
+  // useUploadImage hook
+  const { image, setImage, progress, handleSelectImage, handleDeleteImage } =
+    useUploadImage();
+
+  // useTextareaChange hook
+  const {
+    handleChange,
+    inputVal: commentVal,
+    setInputVal: setCommentVal,
+  } = useTextareaChange();
+
+  // useToggle hook
+  const { toggleValue: isInputFocused, setToggleValue: setIsInputFocused } =
+    useToggle();
 
   // Fetch data of post owner
   useEffect(() => {
@@ -90,6 +97,7 @@ const CreateComment = ({
   // Create new comment
   const createComment = async () => {
     if (!currentPost.postId && !user.uid) return;
+    if (!commentVal.trim()) return;
     const commentRef = collection(db, "posts", currentPost?.postId, "comments");
     await addDoc(commentRef, {
       comment: commentVal,
@@ -253,16 +261,10 @@ const CreateComment = ({
                         </div>
                       )}
                     </div>
-
-                    {/* Line */}
-                    <div className="absolute top-0 translate-x-5 -z-10 w-[2px] rounded-full h-full bg-text_3"></div>
                   </div>
                 </section>
 
-                {/* Rendering comments */}
-                <CommentList postId={currentPost?.postId} />
-              </ModalBody>
-              <ModalFooter>
+                {/* Upload image & post comment */}
                 <div className="flex items-center justify-end gap-3">
                   <FileInput
                     multiple={false}
@@ -275,6 +277,14 @@ const CreateComment = ({
                     Post
                   </Button>
                 </div>
+              </ModalBody>
+              <ModalFooter className="py-0">
+                <section className="w-full ">
+                  <h2 className="mb-5 font-semibold border-b xl:text-2xl text-cloudGray border-text_2">
+                    Other comments
+                  </h2>
+                  <CommentList postId={currentPost?.postId} />
+                </section>
               </ModalFooter>
             </>
           )}
