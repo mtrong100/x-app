@@ -10,6 +10,9 @@
   body {
     @apply bg-darkGraphite text-cloudGray;
   }
+  .page-container {
+    @apply w-full max-w-[1440px] mx-auto px-5;
+  }
 }
 
 @layer components {
@@ -85,6 +88,10 @@
   --swiper-pagination-bullet-vertical-gap: 6px;
 }
 
+.swiper-slide img {
+  border-radius: 12px !important;
+}
+
 /* Custom swiper button */
 .swiper-button-next,
 .swiper-button-prev {
@@ -99,7 +106,7 @@
 }
 .swiper-button-next:hover,
 .swiper-button-prev:hover {
-  opacity: 0.8;
+  background-color: #2639c9;
 }
 .swiper-button-next::after,
 .swiper-button-prev::after {

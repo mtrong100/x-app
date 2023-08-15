@@ -15,6 +15,7 @@ import RepostPost from "./RepostPost";
 import SavePost from "./SavePost";
 import CommentPost from "./CommentPost";
 import Skeleton from "@/components/loading/Skeleton";
+import { Autoplay } from "swiper/modules";
 /* ====================================================== */
 
 interface PostItemProps {
@@ -78,7 +79,19 @@ const PostItem = ({ data }: PostItemProps) => {
       {/* Content and images */}
       <div className="mt-3">
         <p className="text-sm">{data?.content}</p>
-        {data?.photos && data?.photos.length > 0 && (
+
+        {data?.photos && data?.photos.length === 1 ? (
+          <div className="w-full h-full mt-2">
+            <Image
+              className="img-cover rounded-xl"
+              priority
+              src={data?.photos[0] || "https://source.unsplash.com/random"}
+              width={500}
+              height={500}
+              alt="user-avatar"
+            />
+          </div>
+        ) : (
           <PostSlide data={data?.photos} />
         )}
       </div>
@@ -99,22 +112,35 @@ export default PostItem;
 function PostSlide({ data }: { data: string[] }) {
   return (
     <Swiper
-      slidesPerView={1}
+      slidesPerView={2}
       loop={true}
+      spaceBetween={20}
       grabCursor={true}
-      centeredSlides={true}
       navigation={true}
-      modules={[Navigation]}
+      autoplay={{
+        delay: 5000,
+        disableOnInteraction: false,
+      }}
+      breakpoints={{
+        // 640: {
+        //   slidesPerView: 1,
+        // },
+        768: {
+          slidesPerView: 2,
+          spaceBetween: -15,
+        },
+      }}
+      modules={[Navigation, Autoplay]}
       className=" mySwiper"
     >
       {data?.map((image, index) => (
         <SwiperSlide className="mt-4 select-none rounded-xl" key={index}>
           <Image
-            className="object-contain w-full h-full rounded-xl"
+            className="object-contain rounded-xl"
             priority
             src={image}
-            width={500}
-            height={500}
+            width={300}
+            height={300}
             alt="user-avatar"
           />
         </SwiperSlide>
