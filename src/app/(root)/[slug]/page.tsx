@@ -147,16 +147,7 @@ const UserSlugPage = () => {
         {postList &&
           postList.length > 0 &&
           postList.map((item: TPostData) => {
-            return (
-              <PostItem
-                key={item.postId}
-                postId={item.postId}
-                content={item.content}
-                photos={item.photos}
-                userId={item.userId}
-                createdAt={item.createdAt}
-              />
-            );
+            return <PostItem key={item.postId} data={item} />;
           })}
       </section>
     </section>
