@@ -101,7 +101,7 @@ function CommentItem({ data, totalComment, index }: CommentItemProps) {
       const userDocSnap = await getDoc(userDocRef);
       const userDocData = userDocSnap.data();
       if (userDocData) {
-        setUserData(userDocData);
+        setUserData(userDocData as UserDataTypes);
       }
     }
     fetchUserData();
