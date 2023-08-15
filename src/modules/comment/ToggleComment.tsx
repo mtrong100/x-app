@@ -6,7 +6,6 @@ import {
   ModalBody,
   ModalFooter,
   Button,
-  useDisclosure,
 } from "@nextui-org/react";
 import { useAppSelector } from "@/redux/store";
 import useToggle from "@/hooks/useToggleValue";
@@ -19,7 +18,6 @@ import useTextareaChange from "@/hooks/useTextareaChange";
 import { deleteDoc, doc, updateDoc } from "firebase/firestore";
 import { db } from "@/utils/firebase";
 import FileInput from "@/components/input/FileInput";
-import useDeleteImage from "@/hooks/useDeleteImage";
 /* ====================================================== */
 
 const ToggleComment = ({
@@ -31,7 +29,6 @@ const ToggleComment = ({
 }) => {
   const { user } = useAppSelector((state) => state.auth);
   const { commentItemData: cmtData } = useAppSelector((state) => state.post);
-  const { comment, commentImg, imageName } = cmtData;
 
   /* ========================= Custom hooks =====>> */
   // useToggle hook
@@ -39,15 +36,8 @@ const ToggleComment = ({
     useToggle();
 
   // useUploadImage hook
-  const {
-    image,
-    setImage,
-    photoName,
-    setPhotoName,
-    progress,
-    handleSelectImage,
-    handleDeleteImage,
-  } = useDeleteImage();
+  const { image, setImage, progress, handleSelectImage, handleDeleteImage } =
+    useUploadImage();
 
   // useTextareaChange hook
   const {
@@ -58,12 +48,11 @@ const ToggleComment = ({
 
   // Reset comment value
   useEffect(() => {
-    if (comment || commentImg || imageName) {
-      setCommentVal(comment);
-      setImage(commentImg);
-      setPhotoName(imageName);
+    if (cmtData?.comment || cmtData?.commentImg) {
+      setCommentVal(cmtData?.comment);
+      setImage(cmtData?.commentImg);
     }
-  }, [comment, commentImg, imageName, setCommentVal, setImage, setPhotoName]);
+  }, [cmtData?.comment, cmtData?.commentImg, setCommentVal, setImage]);
 
   // Delete comment
   const deleteComment = async () => {
@@ -169,17 +158,17 @@ const ToggleComment = ({
                         <Loading fullHeight={false} />
                       )}
                       {image && (
-                        <div className="relative w-full h-full">
+                        <div className="relative w-fit">
                           <Image
                             priority
                             src={image}
-                            // width={250}
-                            // height={250}
+                            width={250}
+                            height={250}
                             alt="image-from-user"
                             className="object-contain rounded-lg"
                           />
                           <span
-                            onClick={() => handleDeleteImage(photoName)}
+                            onClick={() => handleDeleteImage(image)}
                             className="circle-icon"
                           >
                             <CloseIcon />
