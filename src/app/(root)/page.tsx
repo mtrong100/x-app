@@ -1,6 +1,5 @@
 "use client";
 import Button from "@/components/button/Button";
-import Loading from "@/components/loading/Loading";
 import PostItem, { PostItemSkeleton } from "@/modules/post/PostItem";
 import { clearUser, setUser } from "@/redux/features/authSlice";
 import { setPosts } from "@/redux/features/postSlice";
@@ -12,6 +11,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { v4 } from "uuid";
 import { useEffect, useState } from "react";
+import "react-toastify/dist/ReactToastify.css";
 import { useDispatch } from "react-redux";
 import {
   collection,
@@ -24,12 +24,9 @@ import {
 
 export default function Home() {
   const dispatch = useDispatch<AppDispatch>();
-  const { user } = useAppSelector((state) => state.auth);
   const { posts: postList } = useAppSelector((state) => state.post);
   const router = useRouter();
   const [loading, setLoading] = useState(true);
-
-  // console.log(user);
 
   // Watch user
   useEffect(() => {

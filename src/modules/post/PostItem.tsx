@@ -82,10 +82,10 @@ const PostItem = ({ data }: PostItemProps) => {
         <p className="text-sm">{data?.content}</p>
 
         {data?.photos && data?.photos.length === 1 ? (
-          <div className="w-full h-full mt-2">
+          <div className="w-full h-full mt-2 rounded-md">
             <Image
               key={v4()}
-              className="img-cover rounded-xl"
+              className="rounded img-cover"
               priority
               src={data?.photos[0] || "https://source.unsplash.com/random"}
               width={500}
@@ -116,7 +116,7 @@ function PostSlide({ data }: { data: string[] }) {
     <Swiper
       slidesPerView={2}
       loop={true}
-      spaceBetween={20}
+      spaceBetween={6}
       grabCursor={true}
       navigation={true}
       autoplay={{
@@ -129,22 +129,23 @@ function PostSlide({ data }: { data: string[] }) {
         // },
         768: {
           slidesPerView: 2,
-          spaceBetween: -15,
         },
       }}
       modules={[Navigation, Autoplay]}
       className=" mySwiper"
     >
       {data?.map((image, index) => (
-        <SwiperSlide className="mt-4 select-none rounded-xl" key={index}>
-          <Image
-            className="object-contain rounded-xl"
-            priority
-            src={image}
-            width={300}
-            height={300}
-            alt="user-avatar"
-          />
+        <SwiperSlide className="mt-4 select-none" key={index}>
+          <div className="w-full h-full">
+            <Image
+              className="rounded img-cover"
+              priority
+              src={image}
+              width={500}
+              height={500}
+              alt="user-avatar"
+            />
+          </div>
         </SwiperSlide>
       ))}
     </Swiper>

@@ -3,13 +3,13 @@ import { twMerge } from "tailwind-merge";
 
 interface SkeletonProps {
   className?: string;
-  bgColor?: "primary" | "secondary" | "third";
+  bgcolor?: "primary" | "secondary" | "third";
 }
 
-const Skeleton = ({ className = "", bgColor = "primary" }: SkeletonProps) => {
+const Skeleton = ({ className = "", bgcolor = "primary" }: SkeletonProps) => {
   let bgClass = "";
 
-  switch (bgColor) {
+  switch (bgcolor) {
     case "primary":
       bgClass = "bg-loadingGradient";
       break;

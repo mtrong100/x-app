@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Modal,
   ModalContent,
@@ -7,9 +7,7 @@ import {
   ModalFooter,
   Button,
 } from "@nextui-org/react";
-import Image from "next/image";
 import FileInput from "@/components/input/FileInput";
-import { CloseIcon } from "@/components/icons/Icon";
 import useTextareaChange from "@/hooks/useTextareaChange";
 import {
   addDoc,
@@ -17,16 +15,22 @@ import {
   doc,
   getDoc,
   serverTimestamp,
+  updateDoc,
 } from "firebase/firestore";
 import { db } from "@/utils/firebase";
-import { useAppSelector } from "@/redux/store";
-import Link from "next/link";
+import { AppDispatch, useAppSelector } from "@/redux/store";
 import TextareaAutosize from "react-textarea-autosize";
 import useUploadImage from "@/hooks/useUploadImage";
 import Loading from "@/components/loading/Loading";
 import { formatDateTime } from "@/utils/reuse-function";
 import CommentList from "./CommentList";
 import useToggle from "@/hooks/useToggleValue";
+import { useDispatch } from "react-redux";
+import { setIsUpdateCmt } from "@/redux/features/postSlice";
+import UserAvatar from "../user/UserAvatar";
+import PostPreview from "../post/PostPreview";
+import UserMeta from "../user/UserMeta";
+import ImageCmt from "@/components/image/ImageCmt";
 /* ====================================================== */
 
 type TUserData = {
@@ -46,8 +50,14 @@ const CreateComment = ({
   onClose: () => void;
 }) => {
   const { user } = useAppSelector((state) => state.auth);
+  const dispatch = useDispatch<AppDispatch>();
   const { postItemData: currentPost } = useAppSelector((state) => state.post);
+  const { commentItemData: cmtData, isUpdateCmt } = useAppSelector(
+    (state) => state.post
+  );
   const date = formatDateTime(currentPost.createdAt);
+  const [updateCmt, setUpdateCmt] = useState("");
+  const modalRef = useRef<HTMLDivElement | null>(null);
   const [postOwner, setPostOwner] = useState<TUserData>({
     email: "",
     username: "",
@@ -94,6 +104,28 @@ const CreateComment = ({
     fetchPostOwner();
   }, [currentPost.userId]);
 
+  // Fetch current comment
+  useEffect(() => {
+    if (cmtData.comment) {
+      setUpdateCmt(cmtData?.comment);
+    }
+  }, [cmtData.comment, setImage]);
+
+  // Click outside modal to disable update comment
+  useEffect(() => {
+    const handleDocumentClick = (e: MouseEvent) => {
+      if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
+        dispatch(setIsUpdateCmt(false));
+      }
+    };
+
+    document.addEventListener("click", handleDocumentClick);
+
+    return () => {
+      document.removeEventListener("click", handleDocumentClick);
+    };
+  }, [dispatch]);
+
   // Create new comment
   const createComment = async () => {
     if (!currentPost.postId && !user.uid) return;
@@ -108,6 +140,31 @@ const CreateComment = ({
     });
     setCommentVal("");
     setImage("");
+  };
+
+  // Update comment
+  const updateComment = async () => {
+    if (!cmtData?.postId && !cmtData?.commentId) return;
+    const commentDocRef = doc(
+      db,
+      "posts",
+      cmtData?.postId,
+      "comments",
+      cmtData?.commentId
+    );
+    await updateDoc(commentDocRef, {
+      comment: updateCmt,
+      commentImg: image,
+    });
+    setUpdateCmt("");
+    setImage("");
+    dispatch(setIsUpdateCmt(false));
+  };
+
+  // Reset comment when close
+  const handleReset = () => {
+    dispatch(setIsUpdateCmt(false));
+    onClose();
   };
 
   return (
@@ -142,85 +199,36 @@ const CreateComment = ({
       >
         <ModalContent>
           {(onClose) => (
-            <>
+            <section ref={modalRef}>
               <ModalHeader className="flex flex-col gap-1 text-xl font-semibold text-white">
                 Comments
               </ModalHeader>
               <ModalBody className="gap-0">
                 <div className="relative flex items-start gap-3 pb-3">
-                  <div className="w-[45px] border-2 border-primaryColor h-[45px] rounded-full flex-shrink-0 select-none">
-                    <Image
-                      className="rounded-full select-none img-cover"
-                      src={
-                        postOwner?.photoURL ||
-                        "https://source.unsplash.com/random"
-                      }
-                      width={500}
-                      height={500}
-                      alt="user-avatar"
-                    />
-                  </div>
+                  <UserAvatar avatar={user?.photoURL} />
+
                   <div className="flex-1">
-                    <div className="flex items-center gap-1">
-                      <Link
-                        href="/"
-                        className="font-semibold text-white hover:underline"
-                      >
-                        {postOwner?.username}
-                      </Link>
-                      <span className="text-sm text-text_4">{`@${postOwner?.slug}`}</span>
-                      <span className="text-lg font-bold">.</span>
-                      <span className="text-sm text-text_4">{date}</span>
-                    </div>
+                    <UserMeta
+                      username={postOwner?.username}
+                      slug={postOwner?.slug}
+                      date={date}
+                    />
                     <p className="mt-1 text-base">{currentPost?.content}</p>
-                    <div
-                      className={`${
-                        currentPost?.photos.length === 1
-                          ? "grid-cols-1"
-                          : "grid-cols-2"
-                      } grid gap-1 mt-2`}
-                    >
-                      {currentPost?.photos &&
-                        currentPost?.photos.length > 0 &&
-                        currentPost?.photos.map((image, index) => (
-                          <div
-                            key={index}
-                            className="relative w-full h-full rounded-lg"
-                          >
-                            <Image
-                              priority
-                              src={image}
-                              width={250}
-                              height={250}
-                              alt="user-avatar"
-                              className="rounded-lg img-cover"
-                            />
-                          </div>
-                        ))}
-                    </div>
+                    <PostPreview photos={currentPost?.photos} />
                     <div className="flex items-center gap-1 mt-1 text-sm font-medium">
                       <span className="text-text_3">Replying to</span>
                       <span className=" text-primaryColor">{`@${postOwner?.slug}`}</span>
                     </div>
                   </div>
+
                   {/* Line */}
-                  <div className="absolute top-0 translate-x-5 -z-10 w-[2px] rounded-full h-full bg-text_3"></div>
+                  <div className="verical-line"></div>
                 </div>
 
                 {/* Add comment here */}
                 <section className="flex flex-col gap-4">
                   <div className="relative flex items-start w-full gap-3 pb-3">
-                    <div className="w-[45px] border-2 border-primaryColor h-[45px] rounded-full flex-shrink-0 select-none">
-                      <Image
-                        className="rounded-full select-none img-cover"
-                        src={
-                          user?.photoURL || "https://source.unsplash.com/random"
-                        }
-                        width={500}
-                        height={500}
-                        alt="user-avatar"
-                      />
-                    </div>
+                    <UserAvatar avatar={user?.photoURL} />
 
                     {/* User comment here */}
                     <div
@@ -230,35 +238,34 @@ const CreateComment = ({
                           : "border-transparent"
                       } relative w-full min-h-[88px] border-2 bg-secondaryDark p-3 rounded-lg`}
                     >
-                      <TextareaAutosize
-                        value={commentVal}
-                        onChange={handleChange}
-                        onFocus={() => setIsInputFocused(true)}
-                        onBlur={() => setIsInputFocused(false)}
-                        className="w-full mb-2 bg-transparent outline-none resize-none placeholder:text-text_3"
-                        placeholder="Post your reply..."
-                      />
+                      {isUpdateCmt ? (
+                        <TextareaAutosize
+                          value={updateCmt}
+                          onChange={(
+                            e: React.ChangeEvent<HTMLTextAreaElement>
+                          ) => setUpdateCmt(e.target.value)}
+                          onFocus={() => setIsInputFocused(true)}
+                          onBlur={() => setIsInputFocused(false)}
+                          className="w-full mb-2 bg-transparent outline-none resize-none placeholder:text-text_3"
+                          placeholder="Update your reply..."
+                        />
+                      ) : (
+                        <TextareaAutosize
+                          value={commentVal}
+                          onChange={handleChange}
+                          onFocus={() => setIsInputFocused(true)}
+                          onBlur={() => setIsInputFocused(false)}
+                          className="w-full mb-2 bg-transparent outline-none resize-none placeholder:text-text_3"
+                          placeholder="Post your reply..."
+                        />
+                      )}
+
                       {!image && progress === 0 && <></>}
                       {progress !== 0 && !image && (
                         <Loading fullHeight={false} />
                       )}
                       {image && (
-                        <div className="relative w-fit">
-                          <Image
-                            priority
-                            src={image}
-                            width={250}
-                            height={250}
-                            alt="image-from-user"
-                            className="object-contain rounded-lg"
-                          />
-                          <span
-                            onClick={() => handleDeleteImage(image)}
-                            className="circle-icon"
-                          >
-                            <CloseIcon />
-                          </span>
-                        </div>
+                        <ImageCmt onClick={handleDeleteImage} image={image} />
                       )}
                     </div>
                   </div>
@@ -271,11 +278,25 @@ const CreateComment = ({
                     handleSelectImage={handleSelectImage}
                   />
                   <Button
-                    onClick={createComment}
-                    className="text-white rounded-lg bg-primaryColor"
+                    color="danger"
+                    variant="ghost"
+                    className="mt-1"
+                    onClick={handleReset}
                   >
-                    Post
+                    Close
                   </Button>
+                  {isUpdateCmt ? (
+                    <Button color="primary" onClick={updateComment}>
+                      Update
+                    </Button>
+                  ) : (
+                    <Button
+                      onClick={createComment}
+                      className="text-white rounded-lg bg-primaryColor"
+                    >
+                      Post
+                    </Button>
+                  )}
                 </div>
               </ModalBody>
               <ModalFooter className="py-0">
@@ -286,7 +307,7 @@ const CreateComment = ({
                   <CommentList postId={currentPost?.postId} />
                 </section>
               </ModalFooter>
-            </>
+            </section>
           )}
         </ModalContent>
       </Modal>

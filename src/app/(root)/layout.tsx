@@ -7,7 +7,7 @@ import "react-toastify/dist/ReactToastify.css";
 import "../globals.scss";
 import { ReduxProvider } from "@/providers/ReduxProvider";
 import NextuiProvider from "@/providers/NextuiProvider";
-import MainLayout from "@/components/layouts/MainLayout";
+import "react-toastify/dist/ReactToastify.css";
 /* ====================================================== */
 
 const inter = Inter({ subsets: ["latin"] });

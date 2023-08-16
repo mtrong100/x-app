@@ -59,3 +59,21 @@ export type TComment = {
   postId: string;
   createdAt: any;
 };
+
+export interface IconDropdownProps {
+  toggleComment: (data: TComment) => void;
+  deleteComment: (data: TComment) => void;
+  data: TComment;
+}
+
+export interface CommentItemProps {
+  data: TComment;
+  totalComment: number;
+  index: number;
+}
+
+export interface UserMetaProps {
+  username: string;
+  slug: string;
+  date: any;
+}

@@ -22,6 +22,9 @@
   .loadingSpin {
     @apply w-[100px] h-[100px] animate-spin rounded-full border-t-[10px] border-t-transparent border-[10px] border-solid border-blue-500;
   }
+  .verical-line {
+    @apply absolute top-0 translate-x-5 -z-10 w-[2px] rounded-full h-full bg-text_3;
+  }
 }
 
 .circle-icon {
@@ -89,7 +92,7 @@
 }
 
 .swiper-slide img {
-  border-radius: 12px !important;
+  border-radius: 5px !important;
 }
 
 /* Custom swiper button */

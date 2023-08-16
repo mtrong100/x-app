@@ -1,5 +1,5 @@
 import { CmtIcon } from "@/components/icons/Icon";
-import { PostActionProps, TComment, TPostData } from "@/types/general.types";
+import { TComment, TPostData } from "@/types/general.types";
 import { useDisclosure } from "@nextui-org/react";
 import React, { useEffect, useState } from "react";
 import CreateComment from "../comment/CreateComment";
@@ -8,6 +8,7 @@ import { useDispatch } from "react-redux";
 import { storedPostData } from "@/redux/features/postSlice";
 import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "@/utils/firebase";
+/* ====================================================== */
 
 interface CommentPostProps {
   data: TPostData;

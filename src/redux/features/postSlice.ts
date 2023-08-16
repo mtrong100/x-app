@@ -5,10 +5,12 @@ interface PostState {
   posts: TPostData[];
   postItemData: TPostData;
   commentItemData: TComment;
+  isUpdateCmt: boolean;
 }
 
 const initialState: PostState = {
   posts: [],
+  isUpdateCmt: false,
   postItemData: {
     postId: "",
     content: "",
@@ -39,9 +41,12 @@ export const postSlice = createSlice({
     storedCommentData: (state, action: PayloadAction<TComment>) => {
       state.commentItemData = action.payload;
     },
+    setIsUpdateCmt: (state, action: PayloadAction<boolean>) => {
+      state.isUpdateCmt = action.payload;
+    },
   },
 });
 
-export const { setPosts, storedPostData, storedCommentData } =
+export const { setPosts, storedPostData, storedCommentData, setIsUpdateCmt } =
   postSlice.actions;
 export default postSlice.reducer;
