@@ -11,7 +11,6 @@ const ImageCmt = ({ onClick, image }: ImageCmtProps) => {
   return (
     <div className="relative w-[250px]">
       <Image
-        priority
         src={image}
         width={300}
         height={300}

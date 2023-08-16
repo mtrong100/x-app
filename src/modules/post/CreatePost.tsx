@@ -122,7 +122,6 @@ const CreatePost = ({
                         className="relative w-full h-full rounded-md"
                       >
                         <Image
-                          priority
                           src={image}
                           width={500}
                           height={500}

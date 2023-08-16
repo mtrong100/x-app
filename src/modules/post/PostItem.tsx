@@ -86,7 +86,6 @@ const PostItem = ({ data }: PostItemProps) => {
             <Image
               key={v4()}
               className="rounded img-cover"
-              priority
               src={data?.photos[0] || "https://source.unsplash.com/random"}
               width={500}
               height={500}
@@ -139,7 +138,6 @@ function PostSlide({ data }: { data: string[] }) {
           <div className="w-full h-full">
             <Image
               className="rounded img-cover"
-              priority
               src={image}
               width={500}
               height={500}

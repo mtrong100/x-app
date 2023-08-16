@@ -17,7 +17,6 @@ const PostPreview = ({ photos }: { photos: string[] }) => {
         photos.map((image, index) => (
           <div key={index} className="relative w-full h-full rounded-lg">
             <Image
-              priority
               src={image}
               width={300}
               height={300}
