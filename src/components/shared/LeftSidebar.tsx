@@ -1,9 +1,8 @@
 "use client";
-import { sidebarLinks } from "@/constants/data";
 import { TSidebarLinks } from "@/types/general.types";
 import React from "react";
 import Link from "next/link";
-import { useRouter, usePathname } from "next/navigation";
+import { usePathname } from "next/navigation";
 import Logo from "../logo/Logo";
 import Swal from "sweetalert2";
 import { EllipsisIcon, LogoutIcon } from "../icons/Icon";
@@ -14,12 +13,47 @@ import Image from "next/image";
 import Button from "../button/Button";
 import { useDisclosure } from "@nextui-org/react";
 import CreatePost from "@/modules/post/CreatePost";
+import {
+  BookmarkIcon,
+  HomeIcon,
+  NotificationIcon,
+  ProfileIcon,
+  SearchIcon,
+} from "@/components/icons/Icon";
 /* ====================================================== */
 
 const LeftSidebar = () => {
   const pathname = usePathname();
   const { user } = useAppSelector((state) => state.auth);
   const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const sidebarLinks = [
+    {
+      name: "Home",
+      icon: <HomeIcon />,
+      route: "/",
+    },
+    {
+      name: "Search",
+      icon: <SearchIcon />,
+      route: "/search",
+    },
+    {
+      name: "Notification",
+      icon: <NotificationIcon />,
+      route: "/notification",
+    },
+    {
+      name: "Bookmark",
+      icon: <BookmarkIcon />,
+      route: "/bookmark",
+    },
+    {
+      name: "Profile",
+      icon: <ProfileIcon />,
+      route: `/${user?.slug}`,
+    },
+  ];
 
   const addPost = () => {
     onOpen();
@@ -81,8 +115,8 @@ const LeftSidebar = () => {
 
 export default LeftSidebar;
 
+// Sign out
 function Signout() {
-  // Sign out
   const handleSignout = () => {
     Swal.fire({
       title: "Log out of your account?",

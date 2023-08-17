@@ -2,14 +2,14 @@ import Image from "next/image";
 import React from "react";
 
 const UserAvatar = ({
-  avatar = "https://source.unsplash.com/random",
+  avatar = "",
   className = "w-[45px] h-[45px]",
 }: {
   avatar: string;
   className?: string;
 }) => {
   return (
-    <div className={`${className}flex-shrink-0 rounded-full select-none `}>
+    <div className={`${className} flex-shrink-0 rounded-full select-none `}>
       <Image
         className="rounded-full select-none img-cover"
         src={avatar || "https://source.unsplash.com/random"}

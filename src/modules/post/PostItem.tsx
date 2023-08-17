@@ -1,10 +1,7 @@
 import React, { useEffect, useState } from "react";
-import Image from "next/image";
 import { TPostData, UserDataTypes } from "@/types/general.types";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation } from "swiper/modules";
 import { formatDateTime } from "@/utils/reuse-function";
-import { doc, getDoc } from "firebase/firestore";
+import { deleteDoc, doc, getDoc } from "firebase/firestore";
 import { db } from "@/utils/firebase";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
@@ -14,7 +11,6 @@ import RepostPost from "./RepostPost";
 import SavePost from "./SavePost";
 import CommentPost from "./CommentPost";
 import Skeleton from "@/components/loading/Skeleton";
-import { Autoplay } from "swiper/modules";
 import UserAvatar from "../user/UserAvatar";
 import UserMeta from "../user/UserMeta";
 import IconDropdown from "@/components/dropdown/IconDropdown";
@@ -24,6 +20,7 @@ import { AppDispatch, useAppSelector } from "@/redux/store";
 import { useDispatch } from "react-redux";
 import { storedPostData } from "@/redux/features/postSlice";
 import ImageDisplay from "@/components/image/ImageDisplay";
+import Swal from "sweetalert2";
 /* ====================================================== */
 
 interface PostItemProps {
@@ -69,7 +66,23 @@ const PostItem = ({ data }: PostItemProps) => {
   };
 
   // Handle delete post
-  const deletePost = () => {};
+  const deletePost = () => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        const postDocRef = doc(db, "posts", data?.postId);
+        await deleteDoc(postDocRef);
+        Swal.fire("Deleted!", "Your post has been deleted.", "success");
+      }
+    });
+  };
 
   return (
     <>
@@ -111,46 +124,6 @@ const PostItem = ({ data }: PostItemProps) => {
 };
 
 export default PostItem;
-
-function PostSlide({ data }: { data: string[] }) {
-  return (
-    <Swiper
-      slidesPerView={2}
-      loop={true}
-      spaceBetween={6}
-      grabCursor={true}
-      navigation={true}
-      autoplay={{
-        delay: 5000,
-        disableOnInteraction: false,
-      }}
-      breakpoints={{
-        // 640: {
-        //   slidesPerView: 1,
-        // },
-        768: {
-          slidesPerView: 2,
-        },
-      }}
-      modules={[Navigation, Autoplay]}
-      className=" mySwiper"
-    >
-      {data?.map((image, index) => (
-        <SwiperSlide className="mt-4 select-none" key={index}>
-          <div className="w-full h-full">
-            <Image
-              className="rounded img-cover"
-              src={image}
-              width={500}
-              height={500}
-              alt="user-avatar"
-            />
-          </div>
-        </SwiperSlide>
-      ))}
-    </Swiper>
-  );
-}
 
 export const PostItemSkeleton = () => {
   return (

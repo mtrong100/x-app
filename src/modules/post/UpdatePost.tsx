@@ -76,16 +76,14 @@ const UpdatePost = ({
   // Update post
   const updatePost = async () => {
     if (!inputVal.trim() || !images) return;
-    const postRef = collection(db, "posts", postData?.postId);
-    await addDoc(postRef, {
+    const postDocRef = doc(db, "posts", postData?.postId);
+    await updateDoc(postDocRef, {
       content: inputVal,
       photos: images,
-      userId: user.uid,
-      createdAt: serverTimestamp(),
     });
     setInputVal("");
     setImages([]);
-    toast.success("New post ahead", {
+    toast.success("Update successfully!", {
       position: "top-center",
       theme: "dark",
       autoClose: 1500,
