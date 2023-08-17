@@ -9,20 +9,18 @@ import { db } from "@/utils/firebase";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
 import "swiper/css";
-import Link from "next/link";
 import LikePost from "./LikePost";
 import RepostPost from "./RepostPost";
 import SavePost from "./SavePost";
 import CommentPost from "./CommentPost";
 import Skeleton from "@/components/loading/Skeleton";
 import { Autoplay } from "swiper/modules";
-import { v4 } from "uuid";
 import UserAvatar from "../user/UserAvatar";
 import UserMeta from "../user/UserMeta";
 import IconDropdown from "@/components/dropdown/IconDropdown";
 import { useDisclosure } from "@nextui-org/react";
 import UpdatePost from "./UpdatePost";
-import { AppDispatch } from "@/redux/store";
+import { AppDispatch, useAppSelector } from "@/redux/store";
 import { useDispatch } from "react-redux";
 import { storedPostData } from "@/redux/features/postSlice";
 import ImageDisplay from "@/components/image/ImageDisplay";
@@ -36,6 +34,7 @@ const PostItem = ({ data }: PostItemProps) => {
   const date = formatDateTime(data?.createdAt);
   const dispatch = useDispatch<AppDispatch>();
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { user: currentUser } = useAppSelector((state) => state.auth);
   const [user, setUser] = useState<UserDataTypes>({
     uid: "",
     email: "",
@@ -79,13 +78,16 @@ const PostItem = ({ data }: PostItemProps) => {
           <UserAvatar className="w-[38px] h-[38px]" avatar={user?.photoURL} />
           <div className="flex items-start flex-1">
             <UserMeta username={user?.username} slug={user?.slug} date={date} />
-            <IconDropdown
-              editText="Update post"
-              deleteText="Delete post"
-              editItem={togglePost}
-              data={data}
-              deleteItem={deletePost}
-            />
+
+            {currentUser?.uid === data?.userId && (
+              <IconDropdown
+                editText="Update post"
+                deleteText="Delete post"
+                editItem={togglePost}
+                data={data}
+                deleteItem={deletePost}
+              />
+            )}
           </div>
         </div>
 

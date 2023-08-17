@@ -15,7 +15,6 @@ import UserMeta from "../user/UserMeta";
 import UserAvatar from "../user/UserAvatar";
 import ImageCmt from "@/components/image/ImageCmt";
 import IconDropdown from "@/components/dropdown/IconDropdown";
-import useToggle from "@/hooks/useToggleValue";
 /* ====================================================== */
 
 const CommentItem = ({ data, totalComment, index }: CommentItemProps) => {

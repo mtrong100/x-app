@@ -7,10 +7,8 @@ import {
   ModalFooter,
   Button,
 } from "@nextui-org/react";
-import Image from "next/image";
 import FileInput from "@/components/input/FileInput";
 import useUploadImages from "@/hooks/useUploadImages";
-import { CloseIcon } from "@/components/icons/Icon";
 import { CircularProgress } from "@nextui-org/react";
 import useTextareaChange from "@/hooks/useTextareaChange";
 import {
