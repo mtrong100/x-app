@@ -31,6 +31,7 @@ import UserAvatar from "../user/UserAvatar";
 import PostPreview from "../post/PostPreview";
 import UserMeta from "../user/UserMeta";
 import ImageCmt from "@/components/image/ImageCmt";
+import ImageDisplay from "@/components/image/ImageDisplay";
 /* ====================================================== */
 
 type TUserData = {
@@ -214,7 +215,10 @@ const CreateComment = ({
                       date={date}
                     />
                     <p className="mt-1 text-base">{currentPost?.content}</p>
-                    <PostPreview photos={currentPost?.photos} />
+                    <ImageDisplay
+                      images={currentPost.photos}
+                      hideIcon={false}
+                    />
                     <div className="flex items-center gap-1 mt-1 text-sm font-medium">
                       <span className="text-text_3">Replying to</span>
                       <span className=" text-primaryColor">{`@${postOwner?.slug}`}</span>
@@ -233,7 +237,7 @@ const CreateComment = ({
                     {/* User comment here */}
                     <div
                       className={`${
-                        isInputFocused
+                        isInputFocused || isUpdateCmt
                           ? "border-primaryColor"
                           : "border-transparent"
                       } relative w-full min-h-[88px] border-2 bg-secondaryDark p-3 rounded-lg`}

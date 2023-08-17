@@ -3,11 +3,13 @@ import React from "react";
 
 const UserAvatar = ({
   avatar = "https://source.unsplash.com/random",
+  className = "w-[45px] h-[45px]",
 }: {
   avatar: string;
+  className?: string;
 }) => {
   return (
-    <div className="w-[45px] h-[45px] rounded-full flex-shrink-0 select-none">
+    <div className={`${className}flex-shrink-0 rounded-full select-none `}>
       <Image
         className="rounded-full select-none img-cover"
         src={avatar || "https://source.unsplash.com/random"}

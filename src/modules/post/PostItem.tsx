@@ -17,6 +17,15 @@ import CommentPost from "./CommentPost";
 import Skeleton from "@/components/loading/Skeleton";
 import { Autoplay } from "swiper/modules";
 import { v4 } from "uuid";
+import UserAvatar from "../user/UserAvatar";
+import UserMeta from "../user/UserMeta";
+import IconDropdown from "@/components/dropdown/IconDropdown";
+import { useDisclosure } from "@nextui-org/react";
+import UpdatePost from "./UpdatePost";
+import { AppDispatch } from "@/redux/store";
+import { useDispatch } from "react-redux";
+import { storedPostData } from "@/redux/features/postSlice";
+import ImageDisplay from "@/components/image/ImageDisplay";
 /* ====================================================== */
 
 interface PostItemProps {
@@ -24,6 +33,9 @@ interface PostItemProps {
 }
 
 const PostItem = ({ data }: PostItemProps) => {
+  const date = formatDateTime(data?.createdAt);
+  const dispatch = useDispatch<AppDispatch>();
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const [user, setUser] = useState<UserDataTypes>({
     uid: "",
     email: "",
@@ -33,7 +45,6 @@ const PostItem = ({ data }: PostItemProps) => {
     photoURL: "",
     createdAt: "",
   });
-  const date = formatDateTime(data?.createdAt);
 
   // Get user data
   useEffect(() => {
@@ -52,59 +63,48 @@ const PostItem = ({ data }: PostItemProps) => {
     fetchUser();
   }, [data.userId]);
 
+  // Handle update post
+  const togglePost = () => {
+    onOpen();
+    dispatch(storedPostData(data));
+  };
+
+  // Handle delete post
+  const deletePost = () => {};
+
   return (
-    <div className="border-b border-text_2">
-      <div className="flex items-center flex-1 gap-3">
-        <div className="w-[38px] hover:opacity-70 h-[38px] rounded-full flex-shrink-0 select-none">
-          <Image
-            className="rounded-full select-none img-cover"
-            src={user?.photoURL || "https://source.unsplash.com/random"}
-            width={500}
-            height={500}
-            alt="user-avatar"
-          />
-        </div>
-        <div className="flex items-center flex-1 gap-1">
-          <Link
-            href={`/${user.slug}`}
-            className="font-semibold text-white hover:underline"
-          >
-            {user?.username}
-          </Link>
-          <span className="text-sm text-text_4">{`@${user.slug}`}</span>
-          <span className="text-lg font-bold">.</span>
-          <span className="text-sm text-text_4">{date}</span>
-        </div>
-      </div>
-
-      {/* Content and images */}
-      <div className="mt-3">
-        <p className="text-sm">{data?.content}</p>
-
-        {data?.photos && data?.photos.length === 1 ? (
-          <div className="w-full h-full mt-2 rounded-md">
-            <Image
-              key={v4()}
-              className="rounded img-cover"
-              src={data?.photos[0] || "https://source.unsplash.com/random"}
-              width={500}
-              height={500}
-              alt="user-avatar"
+    <>
+      <div className="border-b border-text_2">
+        <div className="flex items-center flex-1 gap-3">
+          <UserAvatar className="w-[38px] h-[38px]" avatar={user?.photoURL} />
+          <div className="flex items-start flex-1">
+            <UserMeta username={user?.username} slug={user?.slug} date={date} />
+            <IconDropdown
+              editText="Update post"
+              deleteText="Delete post"
+              editItem={togglePost}
+              data={data}
+              deleteItem={deletePost}
             />
           </div>
-        ) : (
-          <PostSlide data={data?.photos} />
-        )}
-      </div>
+        </div>
 
-      {/* Post action */}
-      <div className="flex items-center gap-10 px-3 py-2">
-        <CommentPost data={data} />
-        <LikePost userId={data?.userId} postId={data?.postId} />
-        <RepostPost />
-        <SavePost />
+        {/* Content and images */}
+        <div className="mt-3">
+          <p className="my-3">{data?.content}</p>
+          <ImageDisplay hideIcon={false} images={data?.photos} />
+        </div>
+
+        {/* Post action */}
+        <div className="flex items-center gap-10 px-3 py-2">
+          <CommentPost data={data} />
+          <LikePost userId={data?.userId} postId={data?.postId} />
+          <RepostPost />
+          <SavePost />
+        </div>
       </div>
-    </div>
+      <UpdatePost isOpen={isOpen} onClose={onClose}></UpdatePost>
+    </>
   );
 };
 

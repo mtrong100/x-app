@@ -2,29 +2,27 @@ import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import {
   CommentItemProps,
-  IconDropdownProps,
   TComment,
   UserDataTypes,
 } from "@/types/general.types";
 import { setIsUpdateCmt, storedCommentData } from "@/redux/features/postSlice";
 import { formatDateTime } from "@/utils/reuse-function";
 import { deleteDoc, doc, getDoc } from "firebase/firestore";
-import { BsThreeDots } from "react-icons/bs";
-import { AppDispatch } from "@/redux/store";
+import { AppDispatch, useAppSelector } from "@/redux/store";
 import { db } from "@/utils/firebase";
 import Skeleton from "@/components/loading/Skeleton";
-import {
-  Dropdown,
-  DropdownTrigger,
-  DropdownMenu,
-  DropdownItem,
-} from "@nextui-org/react";
 import UserMeta from "../user/UserMeta";
 import UserAvatar from "../user/UserAvatar";
 import ImageCmt from "@/components/image/ImageCmt";
+import IconDropdown from "@/components/dropdown/IconDropdown";
+import useToggle from "@/hooks/useToggleValue";
 /* ====================================================== */
 
 const CommentItem = ({ data, totalComment, index }: CommentItemProps) => {
+  const { user } = useAppSelector((state) => state.auth);
+  const date = formatDateTime(data?.createdAt);
+  const dispatch = useDispatch<AppDispatch>();
+  const showLine = index !== totalComment - 1;
   const [userData, setUserData] = useState<UserDataTypes>({
     uid: "",
     email: "",
@@ -34,9 +32,6 @@ const CommentItem = ({ data, totalComment, index }: CommentItemProps) => {
     photoURL: "",
     createdAt: null,
   });
-  const date = formatDateTime(data?.createdAt);
-  const dispatch = useDispatch<AppDispatch>();
-  const showLine = index !== totalComment - 1;
 
   // Fetch user data in comments
   useEffect(() => {
@@ -73,7 +68,7 @@ const CommentItem = ({ data, totalComment, index }: CommentItemProps) => {
 
   return (
     <>
-      <div className="relative flex items-center justify-between gap-3 pb-6 ">
+      <div className="relative flex items-start justify-between gap-3 pb-6 ">
         <div className="flex items-start gap-3">
           <UserAvatar avatar={userData?.photoURL} />
           <div className="flex-1">
@@ -86,12 +81,13 @@ const CommentItem = ({ data, totalComment, index }: CommentItemProps) => {
             {data?.commentImg && <ImageCmt image={data?.commentImg} />}
           </div>
         </div>
-        <IconDropdown
-          toggleComment={toggleComment}
-          data={data}
-          deleteComment={deleteComment}
-        />
-        {/* Line */}
+        {userData?.email === user?.email && (
+          <IconDropdown
+            editItem={toggleComment}
+            data={data}
+            deleteItem={deleteComment}
+          />
+        )}
         {showLine && <div className="verical-line"></div>}
       </div>
     </>
@@ -99,39 +95,6 @@ const CommentItem = ({ data, totalComment, index }: CommentItemProps) => {
 };
 
 export default CommentItem;
-
-function IconDropdown({
-  toggleComment,
-  data,
-  deleteComment,
-}: IconDropdownProps) {
-  return (
-    <div className="flex items-center justify-end flex-1 flex-shrink-0">
-      <Dropdown className=" bg-secondaryDark">
-        <DropdownTrigger>
-          <span className="flex items-center justify-center w-[35px] h-[35px] text-xl bg-text_2 rounded-full hover:bg-darkGraphite cursor-pointer">
-            <BsThreeDots />
-          </span>
-        </DropdownTrigger>
-        <DropdownMenu color="primary" aria-label="Static Actions">
-          <DropdownItem
-            onClick={() => toggleComment(data)}
-            className="hover:bg-primaryColor"
-          >
-            Edit comment
-          </DropdownItem>
-          <DropdownItem
-            onClick={() => deleteComment(data)}
-            className="text-danger"
-            color="danger"
-          >
-            Delete comment
-          </DropdownItem>
-        </DropdownMenu>
-      </Dropdown>
-    </div>
-  );
-}
 
 export const CommentItemSkeleton = () => {
   return (

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Modal,
   ModalContent,
@@ -10,31 +10,75 @@ import {
 import Image from "next/image";
 import FileInput from "@/components/input/FileInput";
 import useUploadImages from "@/hooks/useUploadImages";
+import { CloseIcon } from "@/components/icons/Icon";
 import { CircularProgress } from "@nextui-org/react";
 import useTextareaChange from "@/hooks/useTextareaChange";
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  doc,
+  getDoc,
+  serverTimestamp,
+  updateDoc,
+} from "firebase/firestore";
 import { db } from "@/utils/firebase";
 import { toast } from "react-toastify";
-import { useAppSelector } from "@/redux/store";
+import { AppDispatch, useAppSelector } from "@/redux/store";
+import UserAvatar from "../user/UserAvatar";
+import { useDispatch } from "react-redux";
+import { storedPostData } from "@/redux/features/postSlice";
 import ImageDisplay from "@/components/image/ImageDisplay";
 /* ====================================================== */
 
-const CreatePost = ({
+const UpdatePost = ({
   isOpen,
   onClose,
 }: {
   isOpen: boolean;
   onClose: () => void;
 }) => {
-  const { images, setImages, progress, handleSelectImage, handleDeleteImage } =
-    useUploadImages();
+  const { images, setImages, progress, handleSelectImage } = useUploadImages();
+  const dispatch = useDispatch<AppDispatch>();
   const { handleChange, inputVal, setInputVal } = useTextareaChange();
   const { user } = useAppSelector((state) => state.auth);
+  const { postItemData: postData } = useAppSelector((state) => state.post);
 
-  // Create new post
-  const createPost = async () => {
+  // Set post data
+  useEffect(() => {
+    async function fetchPost() {
+      if (!postData?.postId) return;
+      const postDocRef = doc(db, "posts", postData?.postId);
+      const postDocSnap = await getDoc(postDocRef);
+      const data = postDocSnap.data();
+      if (data) {
+        setInputVal(data.content);
+        setImages(data.photos);
+      }
+    }
+    fetchPost();
+  }, [postData?.postId, setImages, setInputVal]);
+
+  // Delete old image
+  const handleDeleteImage = async (url: string) => {
+    if (!postData?.postId) return;
+    const postDocRef = doc(db, "posts", postData?.postId);
+    const filteredPhoto = postData?.photos.filter((item) => item !== url);
+    try {
+      await updateDoc(postDocRef, {
+        photos: filteredPhoto,
+      });
+
+      setImages(filteredPhoto);
+      dispatch(storedPostData({ ...postData, photos: filteredPhoto }));
+    } catch (error) {
+      console.error("Error deleting image:", error);
+    }
+  };
+
+  // Update post
+  const updatePost = async () => {
     if (!inputVal.trim() || !images) return;
-    const postRef = collection(db, "posts");
+    const postRef = collection(db, "posts", postData?.postId);
     await addDoc(postRef, {
       content: inputVal,
       photos: images,
@@ -85,19 +129,11 @@ const CreatePost = ({
           {(onClose) => (
             <>
               <ModalHeader className="flex flex-col gap-1 text-xl font-semibold text-white">
-                Create your new post
+                Update your post
               </ModalHeader>
               <ModalBody>
                 <div className="flex items-start h-full gap-3">
-                  <div className="w-[38px] h-[38px] rounded-full flex-shrink-0">
-                    <Image
-                      src="/default-avatar.jpg"
-                      width={100}
-                      height={100}
-                      alt="user-avatar"
-                      className="rounded-full img-cover"
-                    />
-                  </div>
+                  <UserAvatar avatar={user?.photoURL} />
                   <textarea
                     className="textareaStyle"
                     placeholder="What is going on!"
@@ -130,7 +166,7 @@ const CreatePost = ({
                     Close
                   </Button>
                   <Button
-                    onClick={createPost}
+                    onClick={updatePost}
                     className="text-white bg-primaryColor"
                     onPress={onClose}
                   >
@@ -146,4 +182,4 @@ const CreatePost = ({
   );
 };
 
-export default CreatePost;
+export default UpdatePost;

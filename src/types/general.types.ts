@@ -61,9 +61,11 @@ export type TComment = {
 };
 
 export interface IconDropdownProps {
-  toggleComment: (data: TComment) => void;
-  deleteComment: (data: TComment) => void;
-  data: TComment;
+  editItem: (data: any) => void;
+  deleteItem: (data: any) => void;
+  editText?: string;
+  deleteText?: string;
+  data: any;
 }
 
 export interface CommentItemProps {
@@ -76,4 +78,10 @@ export interface UserMetaProps {
   username: string;
   slug: string;
   date: any;
+}
+
+export interface ImageDisplayProps {
+  images: string[];
+  hideIcon?: boolean;
+  onClick?: (image: string) => void;
 }
