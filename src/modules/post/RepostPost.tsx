@@ -5,7 +5,10 @@ import {
   collection,
   doc,
   getDoc,
+  getDocs,
   onSnapshot,
+  query,
+  where,
   writeBatch,
 } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
@@ -45,20 +48,28 @@ const RepostPost = ({ postId, userId }: PostActionProps) => {
     };
   }, [postId]);
 
-  // Get user's repost
+  // Get user's repost from post
   useEffect(() => {
-    if (!postId || !userId) return;
-    const repostDocRef = doc(db, "posts", postId, "repost", userId);
-    const fetchUserSavePost = async () => {
-      const repostDocSnap = await getDoc(repostDocRef);
-      const repostDocData = repostDocSnap.data();
-      if (repostDocData) {
-        setUserRepost(repostDocData as TRepost);
+    const fetchUserRepost = async () => {
+      if (!postId || !currentUser.uid) return;
+      const saveQuery = query(
+        collection(db, "posts", postId, "repost"),
+        where("userId", "==", currentUser.uid)
+      );
+      try {
+        const saveDocsSnapshot = await getDocs(saveQuery);
+        saveDocsSnapshot.forEach((doc: any) => {
+          const saveDocData = doc.data();
+          if (saveDocData) {
+            setUserRepost(saveDocData as TRepost);
+          }
+        });
+      } catch (error) {
+        console.error("Error:", error);
       }
     };
-
-    fetchUserSavePost();
-  }, [postId, userId]);
+    fetchUserRepost();
+  }, [currentUser.uid, postId]);
 
   // Handle toggle repost
   const toggleRepost = async (postId: string) => {

@@ -1,7 +1,15 @@
 import { PostActionProps, TSaveData } from "@/types/general.types";
 import React, { useEffect, useState } from "react";
 import { BsBookmark, BsBookmarkFill } from "react-icons/bs";
-import { doc, getDoc, writeBatch } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  where,
+  writeBatch,
+} from "firebase/firestore";
 import { db } from "@/utils/firebase";
 import { useAppSelector } from "@/redux/store";
 /* ====================================================== */
@@ -15,20 +23,28 @@ const SavePost = ({ postId, userId }: PostActionProps) => {
     isSaved: false,
   });
 
-  // Get user's saved post
+  // Get user's saved post from post
   useEffect(() => {
-    if (!postId || !userId) return;
-    const saveDocRef = doc(db, "posts", postId, "save", userId);
     const fetchUserSavePost = async () => {
-      const saveDocSnap = await getDoc(saveDocRef);
-      const saveDocData = saveDocSnap.data();
-      if (saveDocData) {
-        setUserSave(saveDocData as TSaveData);
+      if (!postId || !currentUser.uid) return;
+      const saveQuery = query(
+        collection(db, "posts", postId, "save"),
+        where("userId", "==", currentUser.uid)
+      );
+      try {
+        const saveDocsSnapshot = await getDocs(saveQuery);
+        saveDocsSnapshot.forEach((doc: any) => {
+          const saveDocData = doc.data();
+          if (saveDocData) {
+            setUserSave(saveDocData as TSaveData);
+          }
+        });
+      } catch (error) {
+        console.error("Error:", error);
       }
     };
-
     fetchUserSavePost();
-  }, [postId, userId]);
+  }, [currentUser?.uid, postId, userId]);
 
   // Handle toggle save post
   const toggleSave = async (postId: string) => {
@@ -78,7 +94,7 @@ const SavePost = ({ postId, userId }: PostActionProps) => {
       {userSave?.isSaved ? (
         <span
           onClick={() => toggleSave(postId)}
-          className="flex items-center justify-center w-8 h-8 text-xl rounded-full text-primaryColor hover:bg-primaryColor hover:bg-opacity-20 hover:text-primaryColor "
+          className="flex items-center justify-center w-8 h-8 text-base rounded-full cursor-pointer text-primaryColor hover:bg-primaryColor hover:bg-opacity-20 hover:text-primaryColor"
         >
           <BsBookmarkFill />
         </span>

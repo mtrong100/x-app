@@ -7,7 +7,10 @@ import {
   collection,
   doc,
   getDoc,
+  getDocs,
   onSnapshot,
+  query,
+  where,
   writeBatch,
 } from "firebase/firestore";
 import { useAppSelector } from "@/redux/store";
@@ -48,18 +51,26 @@ const LikePost = ({ postId, userId }: PostActionProps) => {
 
   // Get user's like from post
   useEffect(() => {
-    if (!postId || !userId) return;
-    const likeDocRef = doc(db, "posts", postId, "likes", userId);
     const fetchUserLikePost = async () => {
-      const likeDocSnap = await getDoc(likeDocRef);
-      const likeDocData = likeDocSnap.data();
-      if (likeDocData) {
-        setUserLike(likeDocData as TLikeData);
+      if (!postId || !currentUser.uid) return;
+      const saveQuery = query(
+        collection(db, "posts", postId, "like"),
+        where("userId", "==", currentUser.uid)
+      );
+      try {
+        const saveDocsSnapshot = await getDocs(saveQuery);
+        saveDocsSnapshot.forEach((doc: any) => {
+          const saveDocData = doc.data();
+          if (saveDocData) {
+            setUserLike(saveDocData as TLikeData);
+          }
+        });
+      } catch (error) {
+        console.error("Error:", error);
       }
     };
-
     fetchUserLikePost();
-  }, [postId, userId]);
+  }, [postId, currentUser.uid]);
 
   // Handle toggle like post
   const toggleLike = async (postId: string) => {
