@@ -26,12 +26,13 @@ import { formatDateTime } from "@/utils/reuse-function";
 import CommentList from "./CommentList";
 import useToggle from "@/hooks/useToggleValue";
 import { useDispatch } from "react-redux";
-import { setIsUpdateCmt } from "@/redux/features/postSlice";
+import { setIsUpdateCmt, storedCommentData } from "@/redux/features/postSlice";
 import UserAvatar from "../user/UserAvatar";
-import PostPreview from "../post/PostPreview";
 import UserMeta from "../user/UserMeta";
 import ImageCmt from "@/components/image/ImageCmt";
 import ImageDisplay from "@/components/image/ImageDisplay";
+import { TComment } from "@/types/general.types";
+import { toast } from "react-toastify";
 /* ====================================================== */
 
 type TUserData = {
@@ -70,8 +71,7 @@ const CreateComment = ({
 
   /* ========================= Custom hooks =====>> */
   // useUploadImage hook
-  const { image, setImage, progress, handleSelectImage, handleDeleteImage } =
-    useUploadImage();
+  const { image, setImage, progress, handleSelectImage } = useUploadImage();
 
   // useTextareaChange hook
   const {
@@ -105,12 +105,26 @@ const CreateComment = ({
     fetchPostOwner();
   }, [currentPost.userId]);
 
-  // Fetch current comment
+  // Set current comment
   useEffect(() => {
-    if (cmtData.comment) {
-      setUpdateCmt(cmtData?.comment);
+    async function fetchCmt() {
+      if (!cmtData?.postId || !cmtData?.commentId) return;
+      const cmtDocRef = doc(
+        db,
+        "posts",
+        cmtData?.postId,
+        "comments",
+        cmtData?.commentId
+      );
+      const cmtDocSnap = await getDoc(cmtDocRef);
+      const data = cmtDocSnap.data();
+      if (data) {
+        setUpdateCmt(data.comment);
+        setImage(data.commentImg);
+      }
     }
-  }, [cmtData.comment, setImage]);
+    fetchCmt();
+  }, [cmtData?.commentId, cmtData?.postId, setImage]);
 
   // Click outside modal to disable update comment
   useEffect(() => {
@@ -145,7 +159,7 @@ const CreateComment = ({
 
   // Update comment
   const updateComment = async () => {
-    if (!cmtData?.postId && !cmtData?.commentId) return;
+    if (!updateCmt.trim() || !image) return;
     const commentDocRef = doc(
       db,
       "posts",
@@ -153,19 +167,76 @@ const CreateComment = ({
       "comments",
       cmtData?.commentId
     );
-    await updateDoc(commentDocRef, {
-      comment: updateCmt,
-      commentImg: image,
-    });
-    setUpdateCmt("");
-    setImage("");
-    dispatch(setIsUpdateCmt(false));
+
+    try {
+      await updateDoc(commentDocRef, {
+        comment: updateCmt,
+        commentImg: image,
+      });
+
+      // Fetch updated comment data after successful update
+      const updatedCmtDocSnap = await getDoc(commentDocRef);
+      const updatedData = updatedCmtDocSnap.data() as TComment;
+
+      if (updatedData) {
+        setUpdateCmt(updatedData.comment);
+        setImage(updatedData.commentImg);
+        dispatch(storedCommentData(updatedData));
+      }
+
+      dispatch(setIsUpdateCmt(false));
+      setImage("");
+
+      toast.success("Update successfully!", {
+        position: "top-center",
+        theme: "dark",
+        autoClose: 1500,
+        pauseOnHover: false,
+      });
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   // Reset comment when close
   const handleReset = () => {
     dispatch(setIsUpdateCmt(false));
     onClose();
+  };
+
+  // Delete old image
+  const handleDeleteImage = async (url: string) => {
+    if (!cmtData?.postId || !cmtData?.commentId) return;
+    const commentDocRef = doc(
+      db,
+      "posts",
+      cmtData.postId,
+      "comments",
+      cmtData.commentId
+    );
+
+    try {
+      const commentDoc = await getDoc(commentDocRef);
+      if (commentDoc.exists()) {
+        const commentData = commentDoc.data() as TComment;
+
+        if (commentData && commentData.commentImg === url) {
+          await updateDoc(commentDocRef, {
+            commentImg: "",
+          });
+
+          setImage("");
+          dispatch(
+            storedCommentData({
+              ...cmtData,
+              commentImg: "",
+            })
+          );
+        }
+      }
+    } catch (error) {
+      console.error("Error deleting image:", error);
+    }
   };
 
   return (

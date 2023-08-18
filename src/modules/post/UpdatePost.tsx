@@ -26,6 +26,7 @@ import UserAvatar from "../user/UserAvatar";
 import { useDispatch } from "react-redux";
 import { storedPostData } from "@/redux/features/postSlice";
 import ImageDisplay from "@/components/image/ImageDisplay";
+import { TPostData } from "@/types/general.types";
 /* ====================================================== */
 
 const UpdatePost = ({
@@ -65,7 +66,6 @@ const UpdatePost = ({
       await updateDoc(postDocRef, {
         photos: filteredPhoto,
       });
-
       setImages(filteredPhoto);
       dispatch(storedPostData({ ...postData, photos: filteredPhoto }));
     } catch (error) {
@@ -77,18 +77,32 @@ const UpdatePost = ({
   const updatePost = async () => {
     if (!inputVal.trim() || !images) return;
     const postDocRef = doc(db, "posts", postData?.postId);
-    await updateDoc(postDocRef, {
-      content: inputVal,
-      photos: images,
-    });
-    setInputVal("");
-    setImages([]);
-    toast.success("Update successfully!", {
-      position: "top-center",
-      theme: "dark",
-      autoClose: 1500,
-      pauseOnHover: false,
-    });
+
+    try {
+      await updateDoc(postDocRef, {
+        content: inputVal,
+        photos: images,
+      });
+
+      // Fetch updated post data after successful update
+      const updatedPostDocSnap = await getDoc(postDocRef);
+      const updatedData = updatedPostDocSnap.data() as TPostData;
+
+      if (updatedData) {
+        setInputVal(updatedData.content);
+        setImages(updatedData.photos);
+        dispatch(storedPostData(updatedData));
+      }
+
+      toast.success("Update successfully!", {
+        position: "top-center",
+        theme: "dark",
+        autoClose: 1500,
+        pauseOnHover: false,
+      });
+    } catch (error) {
+      console.error("Error updating post:", error);
+    }
   };
 
   return (
@@ -166,7 +180,7 @@ const UpdatePost = ({
                     className="text-white bg-primaryColor"
                     onPress={onClose}
                   >
-                    Post
+                    Update
                   </Button>
                 </div>
               </ModalFooter>
