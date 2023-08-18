@@ -84,7 +84,7 @@ const getGridClass = (imageCount: number) => {
 const getImageContainerClass = (imageCount: number) => {
   switch (imageCount) {
     case 1:
-      return "relative w-full h-[650px] min-h-[320px] rounded-md";
+      return "relative w-full h-full rounded-md";
     case 2:
       return "relative w-full h-[300px] rounded-md";
     case 4:

@@ -40,10 +40,18 @@ export type TLikeData = {
   isLiked: boolean;
 };
 
-export type TTabData = {
-  value: string;
-  name: string;
-  icon: JSX.Element;
+export type TSaveData = {
+  id: string;
+  postId: string;
+  userId: string;
+  isSaved: boolean;
+};
+
+export type TRepost = {
+  id: string;
+  postId: string;
+  userId: string;
+  isRepost: boolean;
 };
 
 export interface PostActionProps {

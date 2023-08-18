@@ -1,15 +1,13 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import PostItem from "@/modules/post/PostItem";
-import Image from "next/image";
-import { useParams, useRouter, useSearchParams } from "next/navigation";
+import PostItem, { PostItemSkeleton } from "@/modules/post/PostItem";
+import { useParams } from "next/navigation";
 import { useDispatch } from "react-redux";
-import { TPostData, TTabData } from "@/types/general.types";
+import { TPostData } from "@/types/general.types";
 import { setUser } from "@/redux/features/authSlice";
 import { setPosts } from "@/redux/features/postSlice";
 import { formatDateTime } from "@/utils/reuse-function";
 import { db } from "@/utils/firebase";
-import { BsArrowLeftShort } from "react-icons/bs";
 import { BiCalendar } from "react-icons/bi";
 import { AppDispatch, useAppSelector } from "@/redux/store";
 import {
@@ -22,19 +20,17 @@ import {
 } from "firebase/firestore";
 import UserAvatar from "@/modules/user/UserAvatar";
 import UserWallpaper from "@/modules/user/UserWallpaper";
-import Link from "next/link";
-import { BsFilePost } from "react-icons/bs";
-import { AiOutlineHeart, AiOutlineRetweet } from "react-icons/ai";
+import { v4 } from "uuid";
+import Header from "@/components/header/Header";
 /* ====================================================== */
 
 const UserSlugPage = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { user } = useAppSelector((state) => state.auth);
   const { slug } = useParams();
+  const [loading, setLoading] = useState(true);
   const { posts: postList } = useAppSelector((state) => state.post);
-  const [tabSelected, setTabSelected] = useState<string>("post");
   const date = formatDateTime(user?.createdAt);
-  const router = useRouter();
 
   // Fetch user data
   useEffect(() => {
@@ -62,13 +58,14 @@ const UserSlugPage = () => {
 
   // Get user post
   useEffect(() => {
+    setLoading(true);
     if (!user.uid) return;
     const postRef = query(
       collection(db, "posts"),
       where("userId", "==", user?.uid),
       orderBy("createdAt", "desc")
     );
-    onSnapshot(postRef, (snapshot) => {
+    const unsubscribe = onSnapshot(postRef, (snapshot) => {
       let results: TPostData[] = [];
       snapshot.forEach((doc) => {
         const postData = doc.data();
@@ -83,60 +80,15 @@ const UserSlugPage = () => {
         }
       });
       dispatch(setPosts(results));
+      setLoading(false);
     });
+
+    return () => unsubscribe();
   }, [dispatch, user.uid]);
 
-  useEffect(() => {
-    const searchParams = new URLSearchParams(window.location.search);
-
-    if (tabSelected) {
-      searchParams.set("tab", tabSelected);
-    } else {
-      searchParams.delete("tab");
-    }
-
-    const newPathname = `${
-      window.location.pathname
-    }?${searchParams.toString()}`;
-
-    router.push(newPathname);
-  }, [router, tabSelected]);
-
-  const tabData = [
-    {
-      name: "Posts",
-      value: "post",
-      icon: <BsFilePost />,
-    },
-    {
-      name: "Reposts",
-      value: "repost",
-      icon: <AiOutlineRetweet />,
-    },
-    {
-      name: "Likes",
-      value: "like",
-      icon: <AiOutlineHeart />,
-    },
-  ];
-
   return (
-    <section>
-      <header className="p-3 bg-secondaryDark">
-        <div className="flex items-center gap-5">
-          <Link
-            href="/"
-            className="flex items-center justify-center w-[35px] h-[35px] rounded-full hover:bg-darkHover cursor-pointer"
-          >
-            <BsArrowLeftShort size={30} />
-          </Link>
-          <div>
-            <h1 className="text-xl font-bold">{user?.username}</h1>
-            <p className="text-sm font-medium text-text_3">2 posts</p>
-          </div>
-        </div>
-      </header>
-
+    <>
+      <Header username={user?.username} amount={postList.length} />
       <div className="relative">
         <UserWallpaper />
         <UserAvatar
@@ -169,23 +121,18 @@ const UserSlugPage = () => {
         </div>
       </div>
 
-      {/* Tab indicator */}
-      <div className="grid grid-cols-3 mt-5 border-b border-text_2">
-        {tabData.map((item: TTabData) => (
-          <li
-            key={item.value}
-            onClick={() => setTabSelected(item.value)}
-            className={`${
-              tabSelected === item.value
-                ? "border-b-4 border-primaryColor  bg-primaryColor bg-opacity-10 text-primaryColor rounded-tl-md rounded-tr-md"
-                : "bg-transparent hover:bg-darkHover border-transparent"
-            } flex items-center space-x-2 w-full py-3 justify-center border-b-4  transition-all cursor-pointer relative`}
-          >
-            <span className="text-lg">{item.icon}</span>
-            <span className="font-medium">{item.name}</span>
-          </li>
-        ))}
-      </div>
+      <div className="w-full h-[1px] bg-text_2 mt-8"></div>
+
+      {/* Skeleton loading */}
+      {loading && (
+        <section className="flex flex-col gap-10 p-5 mt-3">
+          {Array(3)
+            .fill(0)
+            .map((index: number) => (
+              <PostItemSkeleton key={v4()} />
+            ))}
+        </section>
+      )}
 
       {/* Posts */}
       <section className="flex flex-col gap-10 p-5 mt-3">
@@ -195,7 +142,7 @@ const UserSlugPage = () => {
             return <PostItem key={item.postId} data={item} />;
           })}
       </section>
-    </section>
+    </>
   );
 };
 

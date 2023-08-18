@@ -5,15 +5,16 @@ import { db } from "@/utils/firebase";
 import React, { useEffect, useState } from "react";
 import {
   collection,
-  deleteDoc,
   doc,
   getDoc,
   onSnapshot,
-  setDoc,
+  writeBatch,
 } from "firebase/firestore";
+import { useAppSelector } from "@/redux/store";
 /* ====================================================== */
 
 const LikePost = ({ postId, userId }: PostActionProps) => {
+  const { user: currentUser } = useAppSelector((state) => state.auth);
   const [likes, setLikes] = useState<TLikeData[]>([]);
   const [userLike, setUserLike] = useState<TLikeData>({
     id: "",
@@ -64,23 +65,49 @@ const LikePost = ({ postId, userId }: PostActionProps) => {
   const toggleLike = async (postId: string) => {
     if (!postId || !userId) return;
     const likeDocRef = doc(db, "posts", postId, "likes", userId);
-    const likeDocSnap = await getDoc(likeDocRef);
+    const favoriteDocRef = doc(
+      db,
+      "users",
+      currentUser?.uid,
+      "favorite",
+      postId
+    );
 
-    if (likeDocSnap.exists()) {
-      await deleteDoc(likeDocRef);
-    } else {
-      await setDoc(likeDocRef, {
-        postId: postId,
-        userId: userId,
-        isLiked: true,
-      });
+    const batch = writeBatch(db);
+
+    try {
+      const likeDocSnap = await getDoc(likeDocRef);
+      const favoriteDocSnap = await getDoc(favoriteDocRef);
+
+      if (likeDocSnap.exists() || favoriteDocSnap.exists()) {
+        batch.delete(likeDocRef);
+        batch.delete(favoriteDocRef);
+      } else {
+        const likeData = {
+          postId: postId,
+          userId: currentUser?.uid,
+          isLiked: true,
+        };
+        const favoriteData = {
+          postId: postId,
+          userId: userId,
+          isFavorite: true,
+        };
+
+        batch.set(likeDocRef, likeData);
+        batch.set(favoriteDocRef, favoriteData);
+      }
+
+      await batch.commit();
+
+      // Update userLike state after toggling like (stale state at this point)
+      setUserLike((prevUserLike) => ({
+        ...prevUserLike,
+        isLiked: !prevUserLike?.isLiked,
+      }));
+    } catch (error) {
+      console.error("Error toggling like:", error);
     }
-
-    // Update userLike state after toggling like (stale state at this point)
-    setUserLike((prevUserLike) => ({
-      ...prevUserLike,
-      isLiked: !prevUserLike?.isLiked,
-    }));
   };
 
   return (

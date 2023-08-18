@@ -13,6 +13,7 @@ const CommentList = ({ postId }: { postId: string }) => {
 
   // Fetch comments in post
   useEffect(() => {
+    setLoading(true);
     const commentRef = query(
       collection(db, "posts", postId, "comments"),
       orderBy("createdAt", "desc")

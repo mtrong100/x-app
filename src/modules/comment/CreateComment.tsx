@@ -131,6 +131,7 @@ const CreateComment = ({
     const handleDocumentClick = (e: MouseEvent) => {
       if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
         dispatch(setIsUpdateCmt(false));
+        setImage("");
       }
     };
 
@@ -139,7 +140,7 @@ const CreateComment = ({
     return () => {
       document.removeEventListener("click", handleDocumentClick);
     };
-  }, [dispatch]);
+  }, [dispatch, setImage]);
 
   // Create new comment
   const createComment = async () => {
@@ -201,6 +202,7 @@ const CreateComment = ({
   // Reset comment when close
   const handleReset = () => {
     dispatch(setIsUpdateCmt(false));
+    setImage("");
     onClose();
   };
 

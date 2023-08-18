@@ -114,8 +114,8 @@ const PostItem = ({ data }: PostItemProps) => {
         <div className="flex items-center gap-10 px-3 py-2">
           <CommentPost data={data} />
           <LikePost userId={data?.userId} postId={data?.postId} />
-          <RepostPost />
-          <SavePost />
+          <RepostPost userId={data?.userId} postId={data?.postId} />
+          <SavePost userId={data?.userId} postId={data?.postId} />
         </div>
       </div>
       <UpdatePost isOpen={isOpen} onClose={onClose}></UpdatePost>

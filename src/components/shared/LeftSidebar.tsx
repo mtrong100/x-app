@@ -13,47 +13,13 @@ import Image from "next/image";
 import Button from "../button/Button";
 import { useDisclosure } from "@nextui-org/react";
 import CreatePost from "@/modules/post/CreatePost";
-import {
-  BookmarkIcon,
-  HomeIcon,
-  NotificationIcon,
-  ProfileIcon,
-  SearchIcon,
-} from "@/components/icons/Icon";
+import { sidebarLinks } from "@/constants/data";
 /* ====================================================== */
 
 const LeftSidebar = () => {
   const pathname = usePathname();
   const { user } = useAppSelector((state) => state.auth);
   const { isOpen, onOpen, onClose } = useDisclosure();
-
-  const sidebarLinks = [
-    {
-      name: "Home",
-      icon: <HomeIcon />,
-      route: "/",
-    },
-    {
-      name: "Search",
-      icon: <SearchIcon />,
-      route: "/search",
-    },
-    {
-      name: "Notification",
-      icon: <NotificationIcon />,
-      route: "/notification",
-    },
-    {
-      name: "Bookmark",
-      icon: <BookmarkIcon />,
-      route: "/bookmark",
-    },
-    {
-      name: "Profile",
-      icon: <ProfileIcon />,
-      route: `/${user?.slug}`,
-    },
-  ];
 
   const addPost = () => {
     onOpen();
