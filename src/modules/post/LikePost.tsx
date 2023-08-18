@@ -54,7 +54,7 @@ const LikePost = ({ postId, userId }: PostActionProps) => {
     const fetchUserLikePost = async () => {
       if (!postId || !currentUser.uid) return;
       const saveQuery = query(
-        collection(db, "posts", postId, "like"),
+        collection(db, "posts", postId, "likes"),
         where("userId", "==", currentUser.uid)
       );
       try {
@@ -111,7 +111,6 @@ const LikePost = ({ postId, userId }: PostActionProps) => {
 
       await batch.commit();
 
-      // Update userLike state after toggling like (stale state at this point)
       setUserLike((prevUserLike) => ({
         ...prevUserLike,
         isLiked: !prevUserLike?.isLiked,
