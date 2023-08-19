@@ -4,8 +4,7 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Button from "@/components/button/Button";
 import { TFollow, UserDataTypes } from "@/types/general.types";
-import { AppDispatch, useAppSelector } from "@/redux/store";
-import { useDispatch } from "react-redux";
+import { useAppSelector } from "@/redux/store";
 import {
   collection,
   deleteDoc,
@@ -23,7 +22,6 @@ interface UserItemProps {
 
 const UserItem = ({ data }: UserItemProps) => {
   const { user: currentUser } = useAppSelector((state) => state.auth);
-  const dispatch = useDispatch<AppDispatch>();
   const [userFollowingList, setUserFollowingList] = useState<TFollow[]>([]);
 
   // Get user following
@@ -126,23 +124,21 @@ const UserItem = ({ data }: UserItemProps) => {
 
 export default UserItem;
 
-export const UserItemSkeleton = () => {
+export const UserItemSkeleton = ({
+  color = "secondary",
+}: {
+  color: "secondary" | "primary" | "third";
+}) => {
   return (
-    <li className="flex items-center p-3 rounded-md ">
+    <li className="flex items-center p-3 rounded-md">
       <div className="flex items-center flex-1 gap-2">
-        <Skeleton
-          bgcolor="secondary"
-          className="w-[50px] h-[50px] rounded-full"
-        />
+        <Skeleton bgcolor={color} className="w-[50px] h-[50px] rounded-full" />
         <div className="flex flex-col flex-1">
-          <Skeleton bgcolor="secondary" className="h-5 w-28" />
-          <Skeleton bgcolor="secondary" className="w-12 h-3 mt-2" />
+          <Skeleton bgcolor={color} className="h-5 w-28" />
+          <Skeleton bgcolor={color} className="w-12 h-3 mt-2" />
         </div>
       </div>
-      <Skeleton
-        bgcolor="secondary"
-        className="h-[32px] w-[82px] rounded-full"
-      />
+      <Skeleton bgcolor={color} className="h-[32px] w-[82px] rounded-full" />
     </li>
   );
 };

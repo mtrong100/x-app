@@ -16,11 +16,11 @@ import { useDispatch } from "react-redux";
 import { storedUsers } from "@/redux/features/userSlice";
 import UserItem, { UserItemSkeleton } from "@/modules/user/UserItem";
 import { v4 } from "uuid";
+import Searchbar from "../search/Searchbar";
 /* ====================================================== */
 
 const RightSidebar = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const [isInputFocused, setIsInputFocused] = useState<boolean>(false);
   const { users: userList } = useAppSelector((state) => state.user);
   const [loading, setLoading] = useState(true);
   const { user: currentUser } = useAppSelector((state) => state.auth);
@@ -30,8 +30,8 @@ const RightSidebar = () => {
     setLoading(true);
     const userRef = query(
       collection(db, "users"),
-      orderBy("createdAt", "desc")
-      // limit(5)
+      orderBy("createdAt", "desc"),
+      limit(5)
     );
     const unsubscribe = onSnapshot(userRef, (snapshot) => {
       let results: UserDataTypes[] = [];
@@ -62,31 +62,16 @@ const RightSidebar = () => {
 
   return (
     <div className="sticky right-0 top-0 z-20 flex h-screen flex-col overflow-auto p-5 w-[380px]">
-      {/* Search bar */}
-      <div
-        className={`${
-          isInputFocused ? "border-primaryColor" : "border-transparent"
-        } flex items-center  w-full gap-3 py-2 px-3 rounded-full bg-primaryDark border`}
-      >
-        <SearchIcon />
-        <input
-          onFocus={() => setIsInputFocused(true)}
-          onBlur={() => setIsInputFocused(false)}
-          className="w-full bg-transparent outline-none"
-          type="text"
-          placeholder="Search..."
-        />
-      </div>
+      <Searchbar />
 
       {/* Recommended user */}
       <div className="p-3 mt-5 rounded-md bg-primaryDark">
         <h1 className="text-lg font-bold text-cloudGray">Recommended</h1>
         <ul className="flex flex-col gap-3 mt-3">
-          {/* Skeleton loading */}
           {loading &&
             Array(5)
               .fill(0)
-              .map(() => <UserItemSkeleton key={v4()} />)}
+              .map(() => <UserItemSkeleton color="secondary" key={v4()} />)}
 
           {filterCurrentUser.length > 0 &&
             filterCurrentUser.map((item) => (

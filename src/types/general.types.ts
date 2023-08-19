@@ -1,3 +1,6 @@
+import { ChangeEvent } from "react";
+/* ====================================================== */
+
 export type TSidebarLinks = {
   name: string;
   icon: JSX.Element;
@@ -98,3 +101,9 @@ export type TFollow = {
   uid: string;
   isFollowing: boolean;
 };
+
+export interface SearchbarProps {
+  className?: string;
+  query?: string;
+  handeSearchQuery?: (event: ChangeEvent<HTMLInputElement>) => void;
+}

@@ -16,6 +16,9 @@ const Skeleton = ({ className = "", bgcolor = "primary" }: SkeletonProps) => {
     case "secondary":
       bgClass = "bg-secondaryDark";
       break;
+    case "third":
+      bgClass = "bg-darkHover";
+      break;
     default:
       bgClass = "";
       break;
