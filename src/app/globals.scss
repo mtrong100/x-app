@@ -27,6 +27,7 @@
   }
 }
 
+/* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 3px;
   background-color: #2f2f2f;
@@ -39,6 +40,14 @@
 
 ::-webkit-scrollbar-thumb:hover {
   opacity: 0.5;
+}
+
+/* Text ... */
+.truncate-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100px;
 }
 
 .circle-icon {

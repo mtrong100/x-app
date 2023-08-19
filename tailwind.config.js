@@ -49,7 +49,7 @@ module.exports = {
       },
       backgroundImage: {
         primaryGradient: "linear-gradient(to right, #17181e, #1f2129)",
-        loadingGradient: "linear-gradient(to right, #272934, #272934)",
+        loadingGradient: "linear-gradient(to right, #272934, #2f2f2f)",
       },
       boxShadow: {
         blurPrimary: "0px 0px 8px 8px rgba(71, 91, 232, 0.3)",

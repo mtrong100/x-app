@@ -2,11 +2,13 @@ import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import authSlice from "./features/authSlice";
 import { TypedUseSelectorHook, useSelector } from "react-redux";
 import postSlice from "./features/postSlice";
+import userSlice from "./features/userSlice";
 /* ====================================================== */
 
 const reducer = combineReducers({
   auth: authSlice,
   post: postSlice,
+  user: userSlice,
 });
 
 const store = configureStore({

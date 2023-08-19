@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import PostItem, { PostItemSkeleton } from "@/modules/post/PostItem";
 import { useParams } from "next/navigation";
 import { useDispatch } from "react-redux";
-import { TPostData } from "@/types/general.types";
+import { TFollow, TPostData } from "@/types/general.types";
 import { setUser } from "@/redux/features/authSlice";
 import { setPosts } from "@/redux/features/postSlice";
 import { formatDateTime } from "@/utils/reuse-function";
@@ -22,11 +22,20 @@ import UserAvatar from "@/modules/user/UserAvatar";
 import UserWallpaper from "@/modules/user/UserWallpaper";
 import { v4 } from "uuid";
 import Header from "@/components/header/Header";
+import {
+  storedFollowers,
+  storedFollowing,
+  storedUserData,
+} from "@/redux/features/userSlice";
 /* ====================================================== */
 
 const UserSlugPage = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { user } = useAppSelector((state) => state.auth);
+  const {
+    userData: user,
+    following,
+    followers,
+  } = useAppSelector((state) => state.user);
   const { slug } = useParams();
   const [loading, setLoading] = useState(true);
   const { posts: postList } = useAppSelector((state) => state.post);
@@ -45,7 +54,7 @@ const UserSlugPage = () => {
         const userData = doc.data();
         if (userData) {
           dispatch(
-            setUser({
+            storedUserData({
               uid: doc.id,
               ...userData,
             })
@@ -55,6 +64,42 @@ const UserSlugPage = () => {
     }
     fetchUser();
   }, [dispatch, slug]);
+
+  // Get user following length
+  useEffect(() => {
+    if (!user.uid) return;
+    const colRef = collection(db, "users", user?.uid, "following");
+    onSnapshot(colRef, (snapshot) => {
+      let results: TFollow[] = [];
+      snapshot.forEach((doc) => {
+        const data = doc.data() as TFollow;
+        if (data) {
+          results.push({
+            ...data,
+          });
+        }
+      });
+      dispatch(storedFollowing(results));
+    });
+  }, [dispatch, user.uid]);
+
+  // Get user followers length
+  useEffect(() => {
+    if (!user.uid) return;
+    const colRef = collection(db, "users", user?.uid, "followers");
+    onSnapshot(colRef, (snapshot) => {
+      let results: TFollow[] = [];
+      snapshot.forEach((doc) => {
+        const data = doc.data() as TFollow;
+        if (data) {
+          results.push({
+            ...data,
+          });
+        }
+      });
+      dispatch(storedFollowers(results));
+    });
+  }, [dispatch, user.uid]);
 
   // Get user post
   useEffect(() => {
@@ -111,11 +156,11 @@ const UserSlugPage = () => {
 
         <div className="flex items-center gap-4 mt-3 text-sm">
           <div className="flex items-center gap-2">
-            <span className="font-semibold text-white">2</span>
+            <span className="font-semibold text-white">{following.length}</span>
             <p className="text-text_3">Following</p>
           </div>
           <div className="flex items-center gap-2">
-            <span className="font-semibold text-white">2</span>
+            <span className="font-semibold text-white">{followers.length}</span>
             <p className="text-text_3">Followers</p>
           </div>
         </div>
@@ -136,7 +181,7 @@ const UserSlugPage = () => {
 
       {/* Posts */}
       <section className="flex flex-col gap-10 p-5 mt-3">
-        {postList &&
+        {!loading &&
           postList.length > 0 &&
           postList.map((item: TPostData) => {
             return <PostItem key={item.postId} data={item} />;

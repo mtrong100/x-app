@@ -93,3 +93,8 @@ export interface ImageDisplayProps {
   hideIcon?: boolean;
   onClick?: (image: string) => void;
 }
+
+export type TFollow = {
+  uid: string;
+  isFollowing: boolean;
+};

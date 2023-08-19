@@ -1,14 +1,67 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { SearchIcon } from "../icons/Icon";
-import Image from "next/image";
 import Button from "../button/Button";
+import { AppDispatch, useAppSelector } from "@/redux/store";
+import {
+  collection,
+  limit,
+  onSnapshot,
+  orderBy,
+  query,
+} from "firebase/firestore";
+import { db } from "@/utils/firebase";
+import { UserDataTypes } from "@/types/general.types";
+import { useDispatch } from "react-redux";
+import { storedUsers } from "@/redux/features/userSlice";
+import UserItem, { UserItemSkeleton } from "@/modules/user/UserItem";
+import { v4 } from "uuid";
+/* ====================================================== */
 
 const RightSidebar = () => {
+  const dispatch = useDispatch<AppDispatch>();
   const [isInputFocused, setIsInputFocused] = useState<boolean>(false);
+  const { users: userList } = useAppSelector((state) => state.user);
+  const [loading, setLoading] = useState(true);
+  const { user: currentUser } = useAppSelector((state) => state.auth);
+
+  // Get users
+  useEffect(() => {
+    setLoading(true);
+    const userRef = query(
+      collection(db, "users"),
+      orderBy("createdAt", "desc")
+      // limit(5)
+    );
+    const unsubscribe = onSnapshot(userRef, (snapshot) => {
+      let results: UserDataTypes[] = [];
+      snapshot.forEach((doc) => {
+        const data = doc.data();
+        if (data) {
+          results.push({
+            uid: doc.id,
+            email: data.email,
+            username: data.username,
+            role: data.role,
+            slug: data.slug,
+            photoURL: data.photoURL,
+            createdAt: data.createdAt,
+          });
+        }
+      });
+      dispatch(storedUsers(results));
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, [dispatch]);
+
+  const filterCurrentUser = userList.filter(
+    (user) => user.uid !== currentUser.uid
+  );
 
   return (
-    <div className="sticky right-0 top-0 z-20 flex h-screen flex-col overflow-auto p-5 w-[350px]">
+    <div className="sticky right-0 top-0 z-20 flex h-screen flex-col overflow-auto p-5 w-[380px]">
       {/* Search bar */}
       <div
         className={`${
@@ -19,44 +72,29 @@ const RightSidebar = () => {
         <input
           onFocus={() => setIsInputFocused(true)}
           onBlur={() => setIsInputFocused(false)}
-          className="w-full outline-none bg-transparent"
+          className="w-full bg-transparent outline-none"
           type="text"
           placeholder="Search..."
         />
       </div>
 
       {/* Recommended user */}
-      <div className="bg-primaryDark p-3 rounded-md mt-5">
-        <h1 className="text-cloudGray font-bold text-lg">Recommended</h1>
+      <div className="p-3 mt-5 rounded-md bg-primaryDark">
+        <h1 className="text-lg font-bold text-cloudGray">Recommended</h1>
         <ul className="flex flex-col gap-3 mt-3">
-          {Array(5)
-            .fill(0)
-            .map((item, index) => (
-              <li
-                key={index}
-                className="flex items-center p-3 rounded-md hover:bg-slate-100 hover:bg-opacity-5"
-              >
-                <div className="flex items-center flex-1 gap-3">
-                  <div className="w-[38px] hover:opacity-70 h-[38px] rounded-full flex-shrink-0">
-                    <Image
-                      className="rounded-full  img-cover"
-                      src="https://source.unsplash.com/random"
-                      width={100}
-                      height={100}
-                      alt="user-avatar"
-                    />
-                  </div>
-                  <div className="flex flex-col flex-1">
-                    <h4 className="font-semibold text-white hover:underline">
-                      mityoya
-                    </h4>
-                    <span className="text-text_4 text-sm">@mitoya</span>
-                  </div>
-                </div>
-                <Button variant="secondary">Follow</Button>
-              </li>
+          {/* Skeleton loading */}
+          {loading &&
+            Array(5)
+              .fill(0)
+              .map(() => <UserItemSkeleton key={v4()} />)}
+
+          {filterCurrentUser.length > 0 &&
+            filterCurrentUser.map((item) => (
+              <UserItem data={item} key={item.uid} />
             ))}
-          <Button variant="outline-secondary">See more</Button>
+          <Button className="rounded-full" variant="primary">
+            See more
+          </Button>
         </ul>
       </div>
     </div>

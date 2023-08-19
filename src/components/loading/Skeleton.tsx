@@ -11,7 +11,7 @@ const Skeleton = ({ className = "", bgcolor = "primary" }: SkeletonProps) => {
 
   switch (bgcolor) {
     case "primary":
-      bgClass = "bg-loadingGradient";
+      bgClass = "bg-primaryDark";
       break;
     case "secondary":
       bgClass = "bg-secondaryDark";
