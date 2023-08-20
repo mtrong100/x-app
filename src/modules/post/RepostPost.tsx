@@ -1,29 +1,22 @@
 import { useAppSelector } from "@/redux/store";
-import { PostActionProps, TRepost } from "@/types/general.types";
+import { TRepost } from "@/types/general.types";
 import { db } from "@/utils/firebase";
 import {
   collection,
+  deleteDoc,
   doc,
   getDoc,
-  getDocs,
   onSnapshot,
-  query,
-  where,
-  writeBatch,
+  setDoc,
 } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { AiOutlineRetweet } from "react-icons/ai";
 /* ====================================================== */
 
-const RepostPost = ({ postId, userId }: PostActionProps) => {
+const RepostPost = ({ postId }: { postId: string }) => {
   const { user: currentUser } = useAppSelector((state) => state.auth);
   const [repost, setRepost] = useState<TRepost[]>([]);
-  const [userRepost, setUserRepost] = useState<TRepost>({
-    id: "",
-    postId: "",
-    userId: "",
-    isRepost: false,
-  });
+  const [userRepost, setUserRepost] = useState<TRepost[]>([]);
 
   // Get the amount of repost from post
   useEffect(() => {
@@ -48,68 +41,52 @@ const RepostPost = ({ postId, userId }: PostActionProps) => {
     };
   }, [postId]);
 
-  // Get user's repost from post
+  // Get user repost from post
   useEffect(() => {
-    const fetchUserRepost = async () => {
-      if (!postId || !currentUser.uid) return;
-      const saveQuery = query(
-        collection(db, "posts", postId, "repost"),
-        where("userId", "==", currentUser.uid)
-      );
-      try {
-        const saveDocsSnapshot = await getDocs(saveQuery);
-        saveDocsSnapshot.forEach((doc: any) => {
-          const saveDocData = doc.data();
-          if (saveDocData) {
-            setUserRepost(saveDocData as TRepost);
-          }
-        });
-      } catch (error) {
-        console.error("Error:", error);
-      }
-    };
-    fetchUserRepost();
-  }, [currentUser.uid, postId]);
+    if (!currentUser.uid) return;
+    const colRef = collection(db, "users", currentUser?.uid, "repost");
+    onSnapshot(colRef, (snapshot) => {
+      let results: TRepost[] = [];
+      snapshot.forEach((doc) => {
+        const data = doc.data() as TRepost;
+        if (data) {
+          results.push({
+            ...data,
+          });
+        }
+      });
+      setUserRepost(results);
+    });
+  }, [currentUser.uid]);
 
   // Handle toggle repost
   const toggleRepost = async (postId: string) => {
-    if (!postId || !userId) return;
-    const repostDoc = doc(db, "posts", postId, "repost", userId);
+    if (!currentUser.uid) return;
+    const repostDoc = doc(db, "posts", postId, "repost", currentUser.uid);
     const repostDocRef = doc(db, "users", currentUser?.uid, "repost", postId);
-    const batch = writeBatch(db);
 
-    try {
-      const repostDocSnap = await getDoc(repostDoc);
-      const repostDocRefSnap = await getDoc(repostDocRef);
+    const repostSnap = await getDoc(repostDoc);
+    const repostDocSnap = await getDoc(repostDocRef);
 
-      if (repostDocSnap.exists() && repostDocRefSnap.exists()) {
-        batch.delete(repostDoc);
-        batch.delete(repostDocRef);
-      } else {
-        batch.set(repostDoc, {
-          postId: postId,
-          userId: currentUser?.uid,
+    if (repostSnap.exists() && repostDocSnap.exists()) {
+      await Promise.all([deleteDoc(repostDoc), deleteDoc(repostDocRef)]);
+    } else {
+      await Promise.all([
+        setDoc(repostDoc, {
+          uid: currentUser.uid,
           isRepost: true,
-        });
-        batch.set(repostDocRef, {
+        }),
+        setDoc(repostDocRef, {
           postId: postId,
-          userId: userId,
           isRepost: true,
-        });
-      }
-      await batch.commit();
-      setUserRepost((prev) => ({
-        ...prev,
-        isRepost: !prev?.isRepost,
-      }));
-    } catch (error) {
-      console.error("Error:", error);
+        }),
+      ]);
     }
   };
 
   return (
     <div className="flex items-center justify-center flex-1 gap-1 cursor-pointer">
-      {userRepost?.isRepost ? (
+      {userRepost.some((item) => item.postId === postId) ? (
         <span
           onClick={() => toggleRepost(postId)}
           className="flex items-center justify-center w-8 h-8 text-xl rounded-full text-emerald-500 hover:bg-emerald-500 hover:bg-opacity-20"

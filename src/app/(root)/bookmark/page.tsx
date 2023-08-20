@@ -16,7 +16,6 @@ const BookmarkPage = () => {
 
   // Get user post
   useEffect(() => {
-    setLoading(true);
     if (!user.uid) return;
     const saveRef = collection(db, "users", user?.uid, "save");
     const unsubscribe = onSnapshot(saveRef, (snapshot) => {
@@ -46,7 +45,7 @@ const BookmarkPage = () => {
         <section className="flex flex-col gap-10 p-5 mt-3">
           {Array(3)
             .fill(0)
-            .map((index: number) => (
+            .map(() => (
               <PostItemSkeleton key={v4()} />
             ))}
         </section>

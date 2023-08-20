@@ -1,30 +1,23 @@
 import { HeartIcon } from "@/components/icons/Icon";
 import { AiFillHeart } from "react-icons/ai";
-import { PostActionProps, TLikeData } from "@/types/general.types";
+import { TFavorite, TLikeData } from "@/types/general.types";
 import { db } from "@/utils/firebase";
 import React, { useEffect, useState } from "react";
 import {
   collection,
+  deleteDoc,
   doc,
   getDoc,
-  getDocs,
   onSnapshot,
-  query,
-  where,
-  writeBatch,
+  setDoc,
 } from "firebase/firestore";
 import { useAppSelector } from "@/redux/store";
 /* ====================================================== */
 
-const LikePost = ({ postId, userId }: PostActionProps) => {
+const LikePost = ({ postId }: { postId: string }) => {
   const { user: currentUser } = useAppSelector((state) => state.auth);
   const [likes, setLikes] = useState<TLikeData[]>([]);
-  const [userLike, setUserLike] = useState<TLikeData>({
-    id: "",
-    postId: "",
-    userId: "",
-    isLiked: false,
-  });
+  const [userFavorite, setUserFavorite] = useState<TFavorite[]>([]);
 
   // Get the amount of likes from post
   useEffect(() => {
@@ -36,93 +29,69 @@ const LikePost = ({ postId, userId }: PostActionProps) => {
         const data = doc.data();
         if (data) {
           results.push({
-            id: doc.id,
             ...data,
           });
         }
       });
       setLikes(results);
     });
-
     return () => {
       unsubscribe();
     };
   }, [postId]);
 
-  // Get user's like from post
+  // Get user favorite post
   useEffect(() => {
-    const fetchUserLikePost = async () => {
-      if (!postId || !currentUser.uid) return;
-      const saveQuery = query(
-        collection(db, "posts", postId, "likes"),
-        where("userId", "==", currentUser.uid)
-      );
-      try {
-        const saveDocsSnapshot = await getDocs(saveQuery);
-        saveDocsSnapshot.forEach((doc: any) => {
-          const saveDocData = doc.data();
-          if (saveDocData) {
-            setUserLike(saveDocData as TLikeData);
-          }
-        });
-      } catch (error) {
-        console.error("Error:", error);
-      }
-    };
-    fetchUserLikePost();
-  }, [postId, currentUser.uid]);
+    if (!currentUser.uid) return;
+    const colRef = collection(db, "users", currentUser?.uid, "favorite");
+    onSnapshot(colRef, (snapshot) => {
+      let results: TFavorite[] = [];
+      snapshot.forEach((doc) => {
+        const data = doc.data() as TFavorite;
+        if (data) {
+          results.push({
+            ...data,
+          });
+        }
+      });
+      setUserFavorite(results);
+    });
+  }, [currentUser.uid]);
 
   // Handle toggle like post
   const toggleLike = async (postId: string) => {
-    if (!postId || !userId) return;
-    const likeDocRef = doc(db, "posts", postId, "likes", userId);
+    if (!currentUser.uid) return;
+    const likeDocRef = doc(db, "posts", postId, "likes", currentUser.uid);
     const favoriteDocRef = doc(
       db,
       "users",
-      currentUser?.uid,
+      currentUser.uid,
       "favorite",
       postId
     );
 
-    const batch = writeBatch(db);
+    const likeDocSnap = await getDoc(likeDocRef);
+    const favoriteDocSnap = await getDoc(favoriteDocRef);
 
-    try {
-      const likeDocSnap = await getDoc(likeDocRef);
-      const favoriteDocSnap = await getDoc(favoriteDocRef);
-
-      if (likeDocSnap.exists() || favoriteDocSnap.exists()) {
-        batch.delete(likeDocRef);
-        batch.delete(favoriteDocRef);
-      } else {
-        const likeData = {
-          postId: postId,
-          userId: currentUser?.uid,
+    if (likeDocSnap.exists() && favoriteDocSnap.exists()) {
+      await Promise.all([deleteDoc(likeDocRef), deleteDoc(favoriteDocRef)]);
+    } else {
+      await Promise.all([
+        setDoc(likeDocRef, {
+          uid: currentUser.uid,
           isLiked: true,
-        };
-        const favoriteData = {
+        }),
+        setDoc(favoriteDocRef, {
           postId: postId,
-          userId: userId,
-          isFavorite: true,
-        };
-
-        batch.set(likeDocRef, likeData);
-        batch.set(favoriteDocRef, favoriteData);
-      }
-
-      await batch.commit();
-
-      setUserLike((prevUserLike) => ({
-        ...prevUserLike,
-        isLiked: !prevUserLike?.isLiked,
-      }));
-    } catch (error) {
-      console.error("Error toggling like:", error);
+          isLiked: true,
+        }),
+      ]);
     }
   };
 
   return (
     <div className="flex items-center justify-center flex-1 gap-1 cursor-pointer">
-      {userLike?.isLiked ? (
+      {userFavorite.some((item) => item.postId === postId) ? (
         <span
           onClick={() => toggleLike(postId)}
           className="flex items-center justify-center w-8 h-8 text-xl rounded-full text-rose-500 hover:bg-rose-500 hover:bg-opacity-20 hover:text-rose-500 "

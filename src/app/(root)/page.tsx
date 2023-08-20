@@ -1,32 +1,40 @@
 "use client";
-import Button from "@/components/button/Button";
 import PostItem, { PostItemSkeleton } from "@/modules/post/PostItem";
-import { clearUser, setUser } from "@/redux/features/authSlice";
-import { setPosts } from "@/redux/features/postSlice";
-import { AppDispatch, useAppSelector } from "@/redux/store";
-import { TPostData } from "@/types/general.types";
-import { auth, db } from "@/utils/firebase";
-import { onAuthStateChanged } from "firebase/auth";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import Button from "@/components/button/Button";
 import { v4 } from "uuid";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import "react-toastify/dist/ReactToastify.css";
 import { useDispatch } from "react-redux";
+import { TPostData } from "@/types/general.types";
+import { storedFollowing } from "@/redux/features/userSlice";
+import { setPosts } from "@/redux/features/postSlice";
+import { onAuthStateChanged } from "firebase/auth";
+import { homeTab } from "@/constants/data";
+import { clearUser, setUser } from "@/redux/features/authSlice";
+import { auth, db } from "@/utils/firebase";
+import { AppDispatch, useAppSelector } from "@/redux/store";
+import "react-toastify/dist/ReactToastify.css";
 import {
   collection,
   where,
   query,
   onSnapshot,
   orderBy,
+  getDocs,
 } from "firebase/firestore";
 /* ================================================================== */
 
 export default function Home() {
+  const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
   const { posts: postList } = useAppSelector((state) => state.post);
-  const router = useRouter();
+  const { user: currentUser } = useAppSelector((state) => state.auth);
+  const { following } = useAppSelector((state) => state.user);
   const [loading, setLoading] = useState(true);
+  // const [loading2, setLoading2] = useState(true);
+  const [active, setActive] = useState("For you");
+  const [followingPost, setFollowingPost] = useState<TPostData[]>([]);
 
   // Watch user
   useEffect(() => {
@@ -55,45 +63,102 @@ export default function Home() {
     });
   }, [dispatch, router]);
 
-  // Get all posts from firebase
+  // Get data following
   useEffect(() => {
-    setLoading(true);
-    const postRef = query(
-      collection(db, "posts"),
-      orderBy("createdAt", "desc")
-    );
-    const unsubscribe = onSnapshot(postRef, (snapshot) => {
-      let results: TPostData[] = [];
+    if (!currentUser.uid || active === "For you") return;
+    const followingRef = collection(db, "users", currentUser.uid, "following");
+    const unsubscribe = onSnapshot(followingRef, (snapshot) => {
+      let results: any = [];
       snapshot.forEach((doc) => {
-        const postData = doc.data();
-        if (postData) {
+        const data = doc.data();
+        if (data) {
           results.push({
-            postId: doc.id,
-            content: postData.content,
-            photos: postData.photos,
-            userId: postData.userId,
-            createdAt: postData.createdAt,
+            ...data,
           });
         }
       });
-      dispatch(setPosts(results));
+      dispatch(storedFollowing(results));
       setLoading(false);
     });
 
     return () => unsubscribe();
-  }, [dispatch]);
+  }, [active, currentUser.uid, dispatch]);
+
+  // Get all posts and post from following
+  useEffect(() => {
+    setLoading(true);
+    if (active === "Following") {
+      const getFollowingPosts = async () => {
+        let results: TPostData[] = [];
+        for (const followingUser of following) {
+          const userPostsRef = query(
+            collection(db, "posts"),
+            where("userId", "==", followingUser.uid)
+          );
+          const userPostsSnapshot = await getDocs(userPostsRef);
+          userPostsSnapshot.forEach((postDoc) => {
+            const postData = postDoc.data() as TPostData;
+            if (postData) {
+              results.push({
+                postId: postDoc.id,
+                content: postData.content,
+                photos: postData.photos,
+                userId: postData.userId,
+                createdAt: postData.createdAt,
+              });
+            }
+          });
+        }
+        results.sort((a, b) => b.createdAt - a.createdAt);
+        setFollowingPost(results);
+        setLoading(false);
+      };
+      getFollowingPosts();
+    } else if (active === "For you") {
+      const postRef = query(
+        collection(db, "posts"),
+        orderBy("createdAt", "desc")
+      );
+      const unsubscribe = onSnapshot(postRef, (snapshot) => {
+        let results: TPostData[] = [];
+        snapshot.forEach((doc) => {
+          const postData = doc.data();
+          if (postData) {
+            results.push({
+              postId: doc.id,
+              content: postData.content,
+              photos: postData.photos,
+              userId: postData.userId,
+              createdAt: postData.createdAt,
+            });
+          }
+        });
+        dispatch(setPosts(results));
+        setLoading(false);
+      });
+
+      return () => unsubscribe();
+    }
+  }, [active, currentUser.uid, following, dispatch]);
 
   return (
     <>
       <header className="sticky top-0 z-20 bg-darkGraphite bg-opacity-70 backdrop-blur-md ">
         <h1 className="px-5 pt-5 pb-3 text-2xl font-semibold">Home</h1>
         <div className="flex items-center border-b border-text_2">
-          <div className="relative flex-1 p-3 font-medium text-center text-white cursor-pointer hover:bg-white hover:bg-opacity-5">
-            For you
-          </div>
-          <div className="flex-1 p-3 font-medium text-center text-white cursor-pointer hover:bg-white hover:bg-opacity-5">
-            Following
-          </div>
+          {homeTab.map((item) => (
+            <div
+              onClick={() => setActive(item.name)}
+              className={`${
+                active === item.name
+                  ? "border-primaryColor"
+                  : "border-transparent"
+              } relative flex-1 p-3 font-medium text-center text-white border-b-2 cursor-pointer hover:bg-white hover:bg-opacity-5`}
+              key={v4()}
+            >
+              {item.name}
+            </div>
+          ))}
         </div>
       </header>
 
@@ -117,21 +182,22 @@ export default function Home() {
         <Button className="py-2 ml-auto rounded-full">Post</Button>
       </section>
 
-      {/* Skeleton loading */}
-      {loading && (
-        <section className="flex flex-col gap-10 p-5 ">
-          {Array(3)
-            .fill(0)
-            .map((index: number) => (
-              <PostItemSkeleton key={v4()} />
-            ))}
-        </section>
-      )}
-
       {/* Rendering posts */}
       <section className="flex flex-col gap-10 p-5 ">
+        {loading &&
+          Array(3)
+            .fill(0)
+            .map(() => <PostItemSkeleton key={v4()} />)}
+
         {!loading &&
-          postList &&
+          active === "Following" &&
+          followingPost.length > 0 &&
+          followingPost.map((item: TPostData) => {
+            return <PostItem key={item.postId} data={item} />;
+          })}
+
+        {!loading &&
+          active === "For you" &&
           postList.length > 0 &&
           postList.map((item: TPostData) => {
             return <PostItem key={item.postId} data={item} />;

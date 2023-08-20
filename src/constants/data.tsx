@@ -18,3 +18,14 @@ const tabData = [
     icon: <AiOutlineHeart />,
   },
 ];
+
+export const homeTab = [
+  {
+    name: "For you",
+    value: "for you",
+  },
+  {
+    name: "Following",
+    value: "following",
+  },
+];

@@ -91,7 +91,6 @@ const PostItem = ({ data }: PostItemProps) => {
           <UserAvatar className="w-[38px] h-[38px]" avatar={user?.photoURL} />
           <div className="flex items-start flex-1">
             <UserMeta username={user?.username} slug={user?.slug} date={date} />
-
             {currentUser?.uid === data?.userId && (
               <IconDropdown
                 editText="Update post"
@@ -113,9 +112,9 @@ const PostItem = ({ data }: PostItemProps) => {
         {/* Post action */}
         <div className="flex items-center gap-10 px-3 py-2">
           <CommentPost data={data} />
-          <LikePost userId={data?.userId} postId={data?.postId} />
-          <RepostPost userId={data?.userId} postId={data?.postId} />
-          <SavePost userId={data?.userId} postId={data?.postId} />
+          <LikePost postId={data?.postId} />
+          <RepostPost postId={data?.postId} />
+          <SavePost postId={data?.postId} userId={data.userId} />
         </div>
       </div>
       <UpdatePost isOpen={isOpen} onClose={onClose}></UpdatePost>

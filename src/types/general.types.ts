@@ -43,24 +43,15 @@ export type TLikeData = {
   isLiked: boolean;
 };
 
-export type TSaveData = {
-  id: string;
+export type TSavePost = {
   postId: string;
-  userId: string;
   isSaved: boolean;
 };
 
 export type TRepost = {
-  id: string;
   postId: string;
-  userId: string;
   isRepost: boolean;
 };
-
-export interface PostActionProps {
-  userId: string;
-  postId: string;
-}
 
 export type TComment = {
   commentId: string;
@@ -107,3 +98,15 @@ export interface SearchbarProps {
   query?: string;
   handeSearchQuery?: (event: ChangeEvent<HTMLInputElement>) => void;
 }
+
+export type TFavorite = {
+  isLiked: false;
+  postId: string;
+};
+
+export type TSaveData = {
+  id: string;
+  userId: string;
+  postId: string;
+  isSaved: boolean;
+};
