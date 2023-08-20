@@ -99,8 +99,8 @@ const PostCard = ({ data }: PostCardProps) => {
         {/* Post action */}
         <div className="flex items-center gap-10 px-3 py-2">
           <CommentPost data={post} />
-          <LikePost userId={data?.userId} postId={data?.postId} />
-          <RepostPost userId={data?.userId} postId={data?.postId} />
+          <LikePost postId={data?.postId} />
+          <RepostPost postId={data?.postId} />
           <SavePost userId={data?.userId} postId={data?.postId} />
         </div>
       </div>
