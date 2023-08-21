@@ -38,9 +38,13 @@ export default function Home() {
 
   // Check user !!
   useEffect(() => {
-    if (!currentUser.email) {
-      router.push("/sign-in");
-    }
+    setTimeout(() => {
+      if (!currentUser.email) {
+        router.push("/sign-in");
+      } else {
+        router.push("/");
+      }
+    }, 3000);
   }, [currentUser.email, router]);
 
   // Watch user
