@@ -17,9 +17,11 @@ import { storedUsers } from "@/redux/features/userSlice";
 import UserItem, { UserItemSkeleton } from "@/modules/user/UserItem";
 import { v4 } from "uuid";
 import Searchbar from "../search/Searchbar";
+import { useRouter } from "next/navigation";
 /* ====================================================== */
 
 const RightSidebar = () => {
+  const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
   const { users: userList } = useAppSelector((state) => state.user);
   const [loading, setLoading] = useState(true);
@@ -31,7 +33,7 @@ const RightSidebar = () => {
     const userRef = query(
       collection(db, "users"),
       orderBy("createdAt", "desc"),
-      limit(5)
+      limit(6)
     );
     const unsubscribe = onSnapshot(userRef, (snapshot) => {
       let results: UserDataTypes[] = [];
@@ -77,7 +79,11 @@ const RightSidebar = () => {
             filterCurrentUser.map((item) => (
               <UserItem data={item} key={item.uid} />
             ))}
-          <Button className="rounded-full" variant="primary">
+          <Button
+            onClick={() => router.push("/search")}
+            className="rounded-full"
+            variant="primary"
+          >
             See more
           </Button>
         </ul>

@@ -12,7 +12,13 @@ import FileInput from "@/components/input/FileInput";
 import useUploadImages from "@/hooks/useUploadImages";
 import { CircularProgress } from "@nextui-org/react";
 import useTextareaChange from "@/hooks/useTextareaChange";
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  doc,
+  serverTimestamp,
+  updateDoc,
+} from "firebase/firestore";
 import { db } from "@/utils/firebase";
 import { toast } from "react-toastify";
 import { useAppSelector } from "@/redux/store";
@@ -26,24 +32,33 @@ const CreatePost = ({
   isOpen: boolean;
   onClose: () => void;
 }) => {
+  const { user } = useAppSelector((state) => state.auth);
   const { images, setImages, progress, handleSelectImage, handleDeleteImage } =
     useUploadImages();
   const { handleChange, inputVal, setInputVal } = useTextareaChange();
-  const { user } = useAppSelector((state) => state.auth);
 
   // Create new post
   const createPost = async () => {
     if (!inputVal.trim() || !images) return;
+
     const postRef = collection(db, "posts");
-    await addDoc(postRef, {
+    const newPostDoc = await addDoc(postRef, {
       content: inputVal,
       photos: images,
       userId: user.uid,
       createdAt: serverTimestamp(),
     });
+
+    // update postId in document
+    const newPostId = newPostDoc.id;
+    const postDocRef = doc(db, "posts", newPostId);
+    await updateDoc(postDocRef, {
+      postId: newPostId,
+    });
+
     setInputVal("");
     setImages([]);
-    toast.success("New post ahead", {
+    toast.success("New post ahead!", {
       position: "top-center",
       theme: "dark",
       autoClose: 1500,

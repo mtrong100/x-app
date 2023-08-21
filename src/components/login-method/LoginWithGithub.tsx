@@ -31,6 +31,7 @@ const LoginWithGithub = () => {
       if (userDocSnapshot.exists()) {
         const userDocData = userDocSnapshot.data();
         await updateDoc(userDocRef, {
+          userId: data.uid,
           username: userDocData?.username,
           slug: userDocData?.slug,
           email: userDocData?.email,
@@ -39,6 +40,7 @@ const LoginWithGithub = () => {
         });
       } else {
         await setDoc(doc(db, "users", data.uid), {
+          userId: data.uid,
           username: data.displayName,
           slug: slugify(data.displayName || "", { lower: true }),
           email: data.email,
@@ -61,7 +63,7 @@ const LoginWithGithub = () => {
   return (
     <div
       onClick={githubLogin}
-      className="flex items-center group transition-all justify-between hover:bg-darkHover cursor-pointer  border border-text_2 p-3 rounded-lg"
+      className="flex items-center justify-between p-3 transition-all border rounded-lg cursor-pointer group hover:bg-darkHover border-text_2"
     >
       <div className="flex items-center gap-3">
         <span className="text-2xl">
@@ -69,7 +71,7 @@ const LoginWithGithub = () => {
         </span>
         <p>Continue with Github</p>
       </div>
-      <span className=" -translate-x-5 transition-all invisible duration-300 group-hover:visible  group-hover:translate-x-0 ">
+      <span className="invisible transition-all duration-300 -translate-x-5 group-hover:visible group-hover:translate-x-0">
         <ArrowrightIcon />
       </span>
     </div>

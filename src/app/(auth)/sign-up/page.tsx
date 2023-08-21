@@ -15,7 +15,13 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { SignupValidation } from "@/utils/validate";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth, db } from "@/utils/firebase";
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  doc,
+  serverTimestamp,
+  updateDoc,
+} from "firebase/firestore";
 /* ====================================================== */
 
 const SigupPage = () => {
@@ -38,8 +44,9 @@ const SigupPage = () => {
     if (!isValid) return;
     try {
       await createUserWithEmailAndPassword(auth, data.email, data.password);
+
       const userRef = collection(db, "users");
-      await addDoc(userRef, {
+      const newUser = await addDoc(userRef, {
         username: data.username,
         slug: slugify(data.username, { lower: true }),
         email: data.email,
@@ -48,6 +55,14 @@ const SigupPage = () => {
         photoURL: "https://i.imgur.com/2LDUDB6.jpeg",
         createdAt: serverTimestamp(),
       });
+
+      // update userId in document
+      const newUserId = newUser.id;
+      const userDocRef = doc(db, "users", newUserId);
+      await updateDoc(userDocRef, {
+        userId: newUserId,
+      });
+
       toast.success("Welcome to X!", {
         theme: "dark",
         autoClose: 2000,
@@ -60,8 +75,8 @@ const SigupPage = () => {
   };
 
   return (
-    <div className="h-screen flex items-center justify-center w-full ">
-      <div className="w-full shadow-blurPrimary gap-10 md:max-w-lg bg-secondaryDark p-5 rounded-lg">
+    <div className="flex items-center justify-center w-full h-screen ">
+      <div className="w-full gap-10 p-5 rounded-lg shadow-blurPrimary md:max-w-lg bg-secondaryDark">
         <Link href="/">
           <Image
             className="rounded-full w-[50px] h-[50px] flex items-center justify-center hover:bg-darkHover"
@@ -71,16 +86,16 @@ const SigupPage = () => {
             height={40}
           />
         </Link>
-        <h1 className="mt-5 mb-2 font-bold text-3xl">Create your account</h1>
+        <h1 className="mt-5 mb-2 text-3xl font-bold">Create your account</h1>
         <p>Or continue with</p>
-        <div className="w-full mt-5 flex flex-col gap-3">
+        <div className="flex flex-col w-full gap-3 mt-5">
           <LoginWithGoogle />
           <LoginWithGithub />
         </div>
 
         {/* Seperate */}
         <div className="w-full relative my-5 h-[1px] bg-text_3">
-          <span className="absolute top-0 bg-secondaryDark px-2 left-2/4 -translate-x-2/4 -translate-y-2/4">
+          <span className="absolute top-0 px-2 bg-secondaryDark left-2/4 -translate-x-2/4 -translate-y-2/4">
             Or
           </span>
         </div>
@@ -93,7 +108,7 @@ const SigupPage = () => {
             placeholder="Enter your username"
           />
           {errors.username?.message && (
-            <p className="text-sm text-red-500 font-medium">
+            <p className="text-sm font-medium text-red-500">
               {errors.username?.message}
             </p>
           )}
@@ -103,7 +118,7 @@ const SigupPage = () => {
             placeholder="Enter your email"
           />
           {errors.email?.message && (
-            <p className="text-sm text-red-500 font-medium">
+            <p className="text-sm font-medium text-red-500">
               {errors.email?.message}
             </p>
           )}
@@ -113,12 +128,12 @@ const SigupPage = () => {
             control={control}
           ></InputPasswordToggle>
           {errors.password?.message && (
-            <p className="text-sm text-red-500 font-medium">
+            <p className="text-sm font-medium text-red-500">
               {errors.password?.message}
             </p>
           )}
           <div className="mt-1">
-            <p className="text-opacity-50 text-sm font-medium">
+            <p className="text-sm font-medium text-opacity-50">
               Have an account?{" "}
               <Link
                 href="/sign-in"
@@ -130,7 +145,7 @@ const SigupPage = () => {
           </div>
           <Button
             variant="primary"
-            className="w-full uppercase mt-4"
+            className="w-full mt-4 uppercase"
             type="submit"
           >
             continue
