@@ -23,6 +23,7 @@ import {
   orderBy,
   getDocs,
 } from "firebase/firestore";
+import UserAvatar from "@/modules/user/UserAvatar";
 /* ================================================================== */
 
 export default function Home() {
@@ -32,7 +33,6 @@ export default function Home() {
   const { user: currentUser } = useAppSelector((state) => state.auth);
   const { following } = useAppSelector((state) => state.user);
   const [loading, setLoading] = useState(true);
-  // const [loading2, setLoading2] = useState(true);
   const [active, setActive] = useState("For you");
   const [followingPost, setFollowingPost] = useState<TPostData[]>([]);
 
@@ -165,15 +165,7 @@ export default function Home() {
       {/* User input */}
       <section className="p-5 border-b border-text_2">
         <div className="flex items-start gap-2">
-          <div className="w-[45px] hover:opacity-70 h-[45px] rounded-full flex-shrink-0">
-            <Image
-              className="rounded-full img-cover"
-              src="https://source.unsplash.com/random"
-              width={100}
-              height={100}
-              alt="user-avatar"
-            />
-          </div>
+          <UserAvatar avatar={currentUser?.photoURL} />
           <textarea
             className="flex-1 p-2 bg-transparent outline-none resize-none"
             placeholder="What is happening?!"

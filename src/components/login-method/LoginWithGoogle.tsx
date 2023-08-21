@@ -31,7 +31,7 @@ const LoginWithGoogle = () => {
       if (userDocSnapshot.exists()) {
         const userDocData = userDocSnapshot.data();
         await updateDoc(userDocRef, {
-          userId: data.uid,
+          uid: data.uid,
           username: userDocData?.username,
           slug: userDocData?.slug,
           email: userDocData?.email,
@@ -40,7 +40,7 @@ const LoginWithGoogle = () => {
         });
       } else {
         await setDoc(doc(db, "users", data.uid), {
-          userId: data.uid,
+          uid: data.uid,
           username: data.displayName,
           slug: slugify(data.displayName || "", { lower: true }),
           email: data.email,

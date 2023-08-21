@@ -53,11 +53,7 @@ const BookmarkPage = () => {
         const postData = postDoc.data() as TPostData;
         if (postData) {
           allPosts.push({
-            postId: postDoc.id,
-            content: postData.content,
-            photos: postData.photos,
-            userId: postData.userId,
-            createdAt: postData.createdAt,
+            ...postData,
           });
         }
       });

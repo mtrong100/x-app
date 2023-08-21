@@ -23,6 +23,7 @@ import { db } from "@/utils/firebase";
 import { toast } from "react-toastify";
 import { useAppSelector } from "@/redux/store";
 import ImageDisplay from "@/components/image/ImageDisplay";
+import UserAvatar from "../user/UserAvatar";
 /* ====================================================== */
 
 const CreatePost = ({
@@ -104,15 +105,7 @@ const CreatePost = ({
               </ModalHeader>
               <ModalBody>
                 <div className="flex items-start h-full gap-3">
-                  <div className="w-[38px] h-[38px] rounded-full flex-shrink-0">
-                    <Image
-                      src="/default-avatar.jpg"
-                      width={100}
-                      height={100}
-                      alt="user-avatar"
-                      className="rounded-full img-cover"
-                    />
-                  </div>
+                  <UserAvatar avatar={user?.photoURL} />
                   <textarea
                     className="textareaStyle"
                     placeholder="What is going on!"

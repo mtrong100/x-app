@@ -60,7 +60,7 @@ const SigupPage = () => {
       const newUserId = newUser.id;
       const userDocRef = doc(db, "users", newUserId);
       await updateDoc(userDocRef, {
-        userId: newUserId,
+        uid: newUserId,
       });
 
       toast.success("Welcome to X!", {

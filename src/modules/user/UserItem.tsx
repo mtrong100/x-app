@@ -101,22 +101,26 @@ const UserItem = ({ data }: UserItemProps) => {
           <span className="text-xs text-text_4 truncate-text">{`@${data.slug}`}</span>
         </div>
       </div>
-      {userFollowingList.some((item) => item.uid === data.uid) ? (
-        <Button
-          onClick={() => toggleFollow(data?.uid)}
-          variant="outline-secondary"
-          className="text-sm text-white"
-        >
-          Following
-        </Button>
-      ) : (
-        <Button
-          onClick={() => toggleFollow(data?.uid)}
-          variant="secondary"
-          className="text-sm"
-        >
-          Follow
-        </Button>
+      {currentUser.uid !== data.uid && (
+        <>
+          {userFollowingList.some((item) => item.uid === data.uid) ? (
+            <Button
+              onClick={() => toggleFollow(data?.uid)}
+              variant="outline-secondary"
+              className="text-sm text-white"
+            >
+              Following
+            </Button>
+          ) : (
+            <Button
+              onClick={() => toggleFollow(data?.uid)}
+              variant="secondary"
+              className="text-sm"
+            >
+              Follow
+            </Button>
+          )}
+        </>
       )}
     </li>
   );

@@ -3,9 +3,7 @@ import React, { useEffect, useState } from "react";
 import PostItem, { PostItemSkeleton } from "@/modules/post/PostItem";
 import { useParams } from "next/navigation";
 import { useDispatch } from "react-redux";
-import { TFollow, TPostData } from "@/types/general.types";
-import { setUser } from "@/redux/features/authSlice";
-import { setPosts } from "@/redux/features/postSlice";
+import { TPostData } from "@/types/general.types";
 import { formatDateTime } from "@/utils/reuse-function";
 import { db } from "@/utils/firebase";
 import { BiCalendar } from "react-icons/bi";
@@ -22,23 +20,18 @@ import UserAvatar from "@/modules/user/UserAvatar";
 import UserWallpaper from "@/modules/user/UserWallpaper";
 import { v4 } from "uuid";
 import Header from "@/components/header/Header";
-import {
-  storedFollowers,
-  storedFollowing,
-  storedUserData,
-} from "@/redux/features/userSlice";
+import { storedUserData } from "@/redux/features/userSlice";
+import UserFollowing from "@/modules/user/UserFollowing";
+import UserFollowers from "@/modules/user/UserFollowers";
+import { setPosts } from "@/redux/features/postSlice";
 /* ====================================================== */
 
 const UserSlugPage = () => {
-  const dispatch = useDispatch<AppDispatch>();
-  const {
-    userData: user,
-    following,
-    followers,
-  } = useAppSelector((state) => state.user);
   const { slug } = useParams();
-  const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch<AppDispatch>();
+  const { userData: user } = useAppSelector((state) => state.user);
   const { posts: postList } = useAppSelector((state) => state.post);
+  const [loading, setLoading] = useState(true);
   const date = formatDateTime(user?.createdAt);
 
   // Fetch user data
@@ -55,7 +48,6 @@ const UserSlugPage = () => {
         if (userData) {
           dispatch(
             storedUserData({
-              uid: doc.id,
               ...userData,
             })
           );
@@ -64,42 +56,6 @@ const UserSlugPage = () => {
     }
     fetchUser();
   }, [dispatch, slug]);
-
-  // Get user following length
-  useEffect(() => {
-    if (!user.uid) return;
-    const colRef = collection(db, "users", user?.uid, "following");
-    onSnapshot(colRef, (snapshot) => {
-      let results: TFollow[] = [];
-      snapshot.forEach((doc) => {
-        const data = doc.data() as TFollow;
-        if (data) {
-          results.push({
-            ...data,
-          });
-        }
-      });
-      dispatch(storedFollowing(results));
-    });
-  }, [dispatch, user.uid]);
-
-  // Get user followers length
-  useEffect(() => {
-    if (!user.uid) return;
-    const colRef = collection(db, "users", user?.uid, "followers");
-    onSnapshot(colRef, (snapshot) => {
-      let results: TFollow[] = [];
-      snapshot.forEach((doc) => {
-        const data = doc.data() as TFollow;
-        if (data) {
-          results.push({
-            ...data,
-          });
-        }
-      });
-      dispatch(storedFollowers(results));
-    });
-  }, [dispatch, user.uid]);
 
   // Get user post
   useEffect(() => {
@@ -113,14 +69,10 @@ const UserSlugPage = () => {
     const unsubscribe = onSnapshot(postRef, (snapshot) => {
       let results: TPostData[] = [];
       snapshot.forEach((doc) => {
-        const postData = doc.data();
+        const postData = doc.data() as TPostData;
         if (postData) {
           results.push({
-            postId: doc.id,
-            content: postData.content,
-            photos: postData.photos,
-            userId: postData.userId,
-            createdAt: postData.createdAt,
+            ...postData,
           });
         }
       });
@@ -155,14 +107,8 @@ const UserSlugPage = () => {
         </div>
 
         <div className="flex items-center gap-4 mt-3 text-sm">
-          <div className="flex items-center gap-2">
-            <span className="font-semibold text-white">{following.length}</span>
-            <p className="text-text_3">Following</p>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="font-semibold text-white">{followers.length}</span>
-            <p className="text-text_3">Followers</p>
-          </div>
+          <UserFollowing />
+          <UserFollowers />
         </div>
       </div>
 
@@ -173,7 +119,7 @@ const UserSlugPage = () => {
         <section className="flex flex-col gap-10 p-5 mt-3">
           {Array(3)
             .fill(0)
-            .map((index: number) => (
+            .map(() => (
               <PostItemSkeleton key={v4()} />
             ))}
         </section>
