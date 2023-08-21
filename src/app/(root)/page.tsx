@@ -36,35 +36,24 @@ export default function Home() {
   const [active, setActive] = useState("For you");
   const [followingPost, setFollowingPost] = useState<TPostData[]>([]);
 
-  // Check user !!
-  useEffect(() => {
-    setTimeout(() => {
-      if (!currentUser.email) {
-        router.push("/sign-in");
-      } else {
-        router.push("/");
-      }
-    }, 3000);
-  }, [currentUser.email, router]);
-
   // Watch user
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
         const docRef = query(
           collection(db, "users"),
-          where("email", "==", user.email)
+          where("email", "==", user?.email)
         );
         onSnapshot(docRef, (snapshot) => {
           snapshot.forEach((doc: any) => {
             const userData = doc.data();
-            if (!userData) return;
-            dispatch(
-              setUser({
-                uid: doc.id,
-                ...userData,
-              })
-            );
+            if (userData) {
+              dispatch(
+                setUser({
+                  ...userData,
+                })
+              );
+            }
           });
         });
       } else {
