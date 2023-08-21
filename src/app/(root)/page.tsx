@@ -36,6 +36,13 @@ export default function Home() {
   const [active, setActive] = useState("For you");
   const [followingPost, setFollowingPost] = useState<TPostData[]>([]);
 
+  // Check user !!
+  useEffect(() => {
+    if (!currentUser.email) {
+      router.push("/sign-in");
+    }
+  }, [currentUser.email, router]);
+
   // Watch user
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
