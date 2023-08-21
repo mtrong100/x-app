@@ -19,11 +19,32 @@
   .img-cover {
     @apply w-full h-full object-cover;
   }
+  .default-tab {
+    @apply relative flex-1 flex items-center gap-1 justify-center py-3 font-semibold rounded-tl-md rounded-tr-md text-center border-b-2 cursor-pointer;
+  }
   .loadingSpin {
     @apply w-[100px] h-[100px] animate-spin rounded-full border-t-[10px] border-t-transparent border-[10px] border-solid border-blue-500;
   }
   .verical-line {
     @apply absolute top-0 translate-x-5 -z-10 w-[2px] rounded-full h-full bg-text_3;
+  }
+  .post-color {
+    @apply bg-primaryColor bg-opacity-10 text-primaryColor border-primaryColor;
+  }
+  .post-color-hover {
+    @apply hover:bg-primaryColor hover:bg-opacity-10 border-transparent hover:text-primaryColor;
+  }
+  .like-color {
+    @apply bg-rose-500 bg-opacity-10 text-rose-500  border-rose-500;
+  }
+  .like-color-hover {
+    @apply hover:bg-rose-500 hover:bg-opacity-10 border-transparent hover:text-rose-500;
+  }
+  .repost-color {
+    @apply bg-emerald-500 bg-opacity-10 text-emerald-500 border-emerald-500;
+  }
+  .repost-color-hover {
+    @apply hover:bg-emerald-500 hover:bg-opacity-10 border-transparent hover:text-emerald-500;
   }
 }
 

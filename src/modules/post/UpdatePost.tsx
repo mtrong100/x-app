@@ -11,14 +11,7 @@ import FileInput from "@/components/input/FileInput";
 import useUploadImages from "@/hooks/useUploadImages";
 import { CircularProgress } from "@nextui-org/react";
 import useTextareaChange from "@/hooks/useTextareaChange";
-import {
-  addDoc,
-  collection,
-  doc,
-  getDoc,
-  serverTimestamp,
-  updateDoc,
-} from "firebase/firestore";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "@/utils/firebase";
 import { toast } from "react-toastify";
 import { AppDispatch, useAppSelector } from "@/redux/store";
@@ -27,6 +20,7 @@ import { useDispatch } from "react-redux";
 import { storedPostData } from "@/redux/features/postSlice";
 import ImageDisplay from "@/components/image/ImageDisplay";
 import { TPostData } from "@/types/general.types";
+import TextareaAutosize from "react-textarea-autosize";
 /* ====================================================== */
 
 const UpdatePost = ({
@@ -50,7 +44,8 @@ const UpdatePost = ({
       const postDocSnap = await getDoc(postDocRef);
       const data = postDocSnap.data();
       if (data) {
-        setInputVal(data.content);
+        const formatContent = data.content.replace(/<br>/g, "");
+        setInputVal(formatContent);
         setImages(data.photos);
       }
     }
@@ -144,12 +139,12 @@ const UpdatePost = ({
               <ModalBody>
                 <div className="flex items-start h-full gap-3">
                   <UserAvatar avatar={user?.photoURL} />
-                  <textarea
+                  <TextareaAutosize
                     className="textareaStyle"
                     placeholder="What is going on!"
                     onChange={handleChange}
                     value={inputVal}
-                  ></textarea>
+                  />
                 </div>
                 <ImageDisplay images={images} onClick={handleDeleteImage} />
                 {progress === 0 && images.length === 0 && <></>}

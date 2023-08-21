@@ -58,6 +58,8 @@ const BookmarkPage = () => {
         }
       });
 
+      allPosts.sort((a, b) => b.createdAt - a.createdAt);
+
       // Get the correct save post
       const filteredPosts = allPosts.filter((post) =>
         saveData.some((savedItem) => savedItem.postId === post.postId)
@@ -79,7 +81,7 @@ const BookmarkPage = () => {
       {!loading &&
         savePosts.length > 0 &&
         savePosts.map((item: any) => {
-          return <PostItem key={item.id} data={item} />;
+          return <PostItem key={v4()} data={item} />;
         })}
     </section>
   );

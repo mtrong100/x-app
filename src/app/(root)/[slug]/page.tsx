@@ -24,6 +24,9 @@ import { storedUserData } from "@/redux/features/userSlice";
 import UserFollowing from "@/modules/user/UserFollowing";
 import UserFollowers from "@/modules/user/UserFollowers";
 import { setPosts } from "@/redux/features/postSlice";
+import ButtonFollow from "@/components/button/ButtonFollow";
+import { tabData } from "@/constants/data";
+import TabItem from "@/components/tab/TabItem";
 /* ====================================================== */
 
 const UserSlugPage = () => {
@@ -32,6 +35,7 @@ const UserSlugPage = () => {
   const { userData: user } = useAppSelector((state) => state.user);
   const { posts: postList } = useAppSelector((state) => state.post);
   const [loading, setLoading] = useState(true);
+  const [active, setActive] = useState("posts");
   const date = formatDateTime(user?.createdAt);
 
   // Fetch user data
@@ -96,8 +100,13 @@ const UserSlugPage = () => {
 
       {/* User info */}
       <div className="px-10 mt-20">
-        <h1 className="text-xl font-bold text-white">{user?.username}</h1>
-        <p className="font-medium text-text_3">{`@${user?.slug}`}</p>
+        <div className="flex items-start justify-between">
+          <div>
+            <h1 className="text-xl font-bold text-white">{user?.username}</h1>
+            <p className="font-medium text-text_3">{`@${user?.slug}`}</p>
+          </div>
+          <ButtonFollow uid={user.uid} />
+        </div>
 
         <div className="flex items-center gap-2 mt-2 text-sm text-text_3">
           <span className="text-xl">
@@ -112,21 +121,25 @@ const UserSlugPage = () => {
         </div>
       </div>
 
-      <div className="w-full h-[1px] bg-text_2 mt-8"></div>
-
-      {/* Skeleton loading */}
-      {loading && (
-        <section className="flex flex-col gap-10 p-5 mt-3">
-          {Array(3)
-            .fill(0)
-            .map(() => (
-              <PostItemSkeleton key={v4()} />
-            ))}
-        </section>
-      )}
+      <section className="flex items-center my-5 capitalize border-b border-text_2">
+        {tabData.map((item) => (
+          <TabItem
+            key={v4()}
+            value={item.value}
+            icon={item.icon}
+            activeTab={active}
+            onTabClick={() => setActive(item.value)}
+          />
+        ))}
+      </section>
 
       {/* Posts */}
       <section className="flex flex-col gap-10 p-5 mt-3">
+        {loading &&
+          Array(3)
+            .fill(0)
+            .map(() => <PostItemSkeleton key={v4()} />)}
+
         {!loading &&
           postList.length > 0 &&
           postList.map((item: TPostData) => {

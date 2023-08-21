@@ -24,6 +24,7 @@ import { toast } from "react-toastify";
 import { useAppSelector } from "@/redux/store";
 import ImageDisplay from "@/components/image/ImageDisplay";
 import UserAvatar from "../user/UserAvatar";
+import TextareaAutosize from "react-textarea-autosize";
 /* ====================================================== */
 
 const CreatePost = ({
@@ -42,9 +43,12 @@ const CreatePost = ({
   const createPost = async () => {
     if (!inputVal.trim() || !images) return;
 
+    // Replace newline characters with <br> tags
+    const formatValue = inputVal.replace(/\n/g, "<br>");
+
     const postRef = collection(db, "posts");
     const newPostDoc = await addDoc(postRef, {
-      content: inputVal,
+      content: formatValue,
       photos: images,
       userId: user.uid,
       createdAt: serverTimestamp(),
@@ -106,12 +110,12 @@ const CreatePost = ({
               <ModalBody>
                 <div className="flex items-start h-full gap-3">
                   <UserAvatar avatar={user?.photoURL} />
-                  <textarea
+                  <TextareaAutosize
                     className="textareaStyle"
                     placeholder="What is going on!"
                     onChange={handleChange}
                     value={inputVal}
-                  ></textarea>
+                  />
                 </div>
                 <ImageDisplay images={images} onClick={handleDeleteImage} />
                 {progress === 0 && images.length === 0 && <></>}

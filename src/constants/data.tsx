@@ -1,20 +1,21 @@
 import { BsFilePost } from "react-icons/bs";
 import { AiOutlineHeart, AiOutlineRetweet } from "react-icons/ai";
+import { MdPostAdd } from "react-icons/md";
 
-const tabData = [
+export const tabData = [
   {
     name: "Posts",
-    value: "post",
-    icon: <BsFilePost />,
+    value: "posts",
+    icon: <MdPostAdd />,
   },
   {
     name: "Reposts",
-    value: "repost",
+    value: "reposts",
     icon: <AiOutlineRetweet />,
   },
   {
     name: "Likes",
-    value: "like",
+    value: "likes",
     icon: <AiOutlineHeart />,
   },
 ];

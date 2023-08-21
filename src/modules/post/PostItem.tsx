@@ -105,7 +105,10 @@ const PostItem = ({ data }: PostItemProps) => {
 
         {/* Content and images */}
         <div className="mt-3">
-          <p className="my-3">{data?.content}</p>
+          <div
+            dangerouslySetInnerHTML={{ __html: data?.content }}
+            className="my-3"
+          ></div>
           <ImageDisplay hideIcon={false} images={data?.photos} />
         </div>
 
