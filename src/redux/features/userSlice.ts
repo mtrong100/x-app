@@ -18,6 +18,7 @@ const initialState: UserState = {
     slug: "",
     photoURL: "",
     createdAt: "",
+    wallpaper: "",
   },
   following: [],
   followers: [],
