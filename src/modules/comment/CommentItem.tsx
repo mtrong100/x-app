@@ -22,15 +22,7 @@ const CommentItem = ({ data, totalComment, index }: CommentItemProps) => {
   const date = formatDateTime(data?.createdAt);
   const dispatch = useDispatch<AppDispatch>();
   const showLine = index !== totalComment - 1;
-  const [userData, setUserData] = useState<UserDataTypes>({
-    uid: "",
-    email: "",
-    username: "",
-    role: "user",
-    slug: "",
-    photoURL: "",
-    createdAt: null,
-  });
+  const [userData, setUserData] = useState<UserDataTypes | null>(null);
 
   // Fetch user data in comments
   useEffect(() => {
