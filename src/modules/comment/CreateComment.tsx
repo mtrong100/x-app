@@ -69,6 +69,8 @@ const CreateComment = ({
     createdAt: null,
   });
 
+  console.log(postOwner);
+
   /* ========================= Custom hooks =====>> */
   // useUploadImage hook
   const { image, setImage, progress, handleSelectImage } = useUploadImage();
@@ -279,7 +281,7 @@ const CreateComment = ({
               </ModalHeader>
               <ModalBody className="gap-0">
                 <div className="relative flex items-start gap-3 pb-3">
-                  <UserAvatar avatar={user?.photoURL} />
+                  <UserAvatar avatar={postOwner?.photoURL} />
 
                   <div className="flex-1">
                     <UserMeta

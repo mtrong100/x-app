@@ -15,6 +15,7 @@ const initialState: AuthState = {
     slug: "",
     photoURL: "",
     createdAt: "",
+    wallpaper: "",
   },
 };
 
