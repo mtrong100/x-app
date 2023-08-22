@@ -53,6 +53,7 @@ const SigupPage = () => {
         password: data.password,
         role: "user",
         photoURL: "https://i.imgur.com/2LDUDB6.jpeg",
+        wallpaper: "https://source.unsplash.com/random",
         createdAt: serverTimestamp(),
       });
 

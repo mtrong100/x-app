@@ -26,6 +26,7 @@ export type UserDataTypes = {
   slug: string;
   photoURL: string;
   createdAt: any;
+  wallpaper: string;
 };
 
 export type TPostData = {
@@ -109,4 +110,14 @@ export type TSaveData = {
   userId: string;
   postId: string;
   isSaved: boolean;
+};
+
+export interface ModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+export type TUpdateUser = {
+  username: string;
+  slug: string;
 };

@@ -19,17 +19,11 @@ import UserAvatar from "../user/UserAvatar";
 import { useDispatch } from "react-redux";
 import { storedPostData } from "@/redux/features/postSlice";
 import ImageDisplay from "@/components/image/ImageDisplay";
-import { TPostData } from "@/types/general.types";
+import { ModalProps, TPostData } from "@/types/general.types";
 import TextareaAutosize from "react-textarea-autosize";
 /* ====================================================== */
 
-const UpdatePost = ({
-  isOpen,
-  onClose,
-}: {
-  isOpen: boolean;
-  onClose: () => void;
-}) => {
+const UpdatePost = ({ isOpen, onClose }: ModalProps) => {
   const { images, setImages, progress, handleSelectImage } = useUploadImages();
   const dispatch = useDispatch<AppDispatch>();
   const { handleChange, inputVal, setInputVal } = useTextareaChange();

@@ -12,11 +12,12 @@ import {
   onSnapshot,
   getDocs,
 } from "firebase/firestore";
+import { AppDispatch } from "@/redux/store";
 /* ====================================================== */
 
 const useAuthWatcher = () => {
   const router = useRouter();
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {

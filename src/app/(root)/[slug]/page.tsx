@@ -19,14 +19,19 @@ import { TPostData } from "@/types/general.types";
 import { tabData } from "@/constants/data";
 import { formatDateTime } from "@/utils/reuse-function";
 import { BiCalendar } from "react-icons/bi";
+import { RiUserSettingsLine } from "react-icons/ri";
+import { useDisclosure } from "@nextui-org/react";
+import UpdateUser from "@/modules/user/UpdateUser";
 /* ====================================================== */
 
 const UserSlugPage = () => {
   /* Redux */
+  const { user: currentUser } = useAppSelector((state) => state.auth);
   const { userData: user } = useAppSelector((state) => state.user);
   const { repostData, favoriteData } = useAppSelector((state) => state.post);
 
-  /* Normal states */
+  /* Others */
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const [loading, setLoading] = useState(true);
   const [active, setActive] = useState("posts");
   const date = formatDateTime(user?.createdAt);
@@ -79,11 +84,16 @@ const UserSlugPage = () => {
     ));
   };
 
+  // Toggle update user
+  const toggleUpdateUser = () => {
+    onOpen();
+  };
+
   return (
     <>
       <Header username={user?.username} amount={postList.length} />
       <div className="relative">
-        <UserWallpaper />
+        <UserWallpaper wallpaper={currentUser?.wallpaper} />
         <UserAvatar
           className="w-[140px] h-[140px] absolute bottom-0 translate-x-2/4 translate-y-2/4 -left-5 border-[5px] border-darkGraphite "
           avatar={user?.photoURL}
@@ -93,9 +103,19 @@ const UserSlugPage = () => {
       {/* User info */}
       <div className="px-10 mt-20">
         <div className="flex items-start justify-between">
-          <div>
-            <h1 className="text-xl font-bold text-white">{user?.username}</h1>
-            <p className="font-medium text-text_3">{`@${user?.slug}`}</p>
+          <div className="flex items-start gap-3">
+            <div>
+              <h1 className="text-xl font-bold text-white">{user?.username}</h1>
+              <p className="font-medium text-text_3">{`@${user?.slug}`}</p>
+            </div>
+            {currentUser.uid === user.uid && (
+              <span
+                onClick={toggleUpdateUser}
+                className="flex items-center justify-center w-[35px] h-[35px] bg-darkHover border  rounded-full hover:bg-primaryColor text-white cursor-pointer"
+              >
+                <RiUserSettingsLine />
+              </span>
+            )}
           </div>
           <ButtonFollow uid={user.uid} />
         </div>
@@ -133,6 +153,8 @@ const UserSlugPage = () => {
 
         {!loading && renderPosts()}
       </section>
+
+      <UpdateUser isOpen={isOpen} onClose={onClose}></UpdateUser>
     </>
   );
 };

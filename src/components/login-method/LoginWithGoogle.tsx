@@ -36,6 +36,7 @@ const LoginWithGoogle = () => {
           slug: userDocData?.slug,
           email: userDocData?.email,
           photoURL: userDocData?.photoURL,
+          wallpaper: userDocData?.wallpaper,
           role: userDocData?.role,
         });
       } else {
@@ -45,6 +46,7 @@ const LoginWithGoogle = () => {
           slug: slugify(data.displayName || "", { lower: true }),
           email: data.email,
           photoURL: data.photoURL,
+          wallpaper: "https://source.unsplash.com/random",
           createdAt: serverTimestamp(),
           role: "user",
         });

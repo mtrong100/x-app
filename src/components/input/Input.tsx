@@ -25,12 +25,12 @@ const InputField: React.FC<InputFieldProps> = ({
   });
 
   return (
-    <div className="relative w-full">
+    <div className="relative w-full ">
       <input
         {...field}
         type={type}
         placeholder={placeholder}
-        className="w-full p-4 text-sm bg-transparent border rounded-sm outline-none focus:bg-darkGraphite border-text_2"
+        className="w-full p-4 text-sm bg-transparent border rounded-md outline-none focus:bg-darkGraphite border-text_2"
       />
       {children ? (
         <div className="absolute right-[15px] text-text_3 top-2/4 cursor-pointer -translate-y-2/4">

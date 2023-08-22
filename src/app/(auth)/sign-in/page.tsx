@@ -45,6 +45,7 @@ const SiginPage = () => {
       console.log(error);
     }
   };
+
   return (
     <div className="flex items-center justify-center w-full h-screen ">
       <div className="w-full gap-10 p-5 rounded-lg shadow-blurPrimary md:max-w-lg bg-secondaryDark">
