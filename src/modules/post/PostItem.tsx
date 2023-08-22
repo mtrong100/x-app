@@ -39,7 +39,8 @@ const PostItem = ({ data }: PostItemProps) => {
     role: "user",
     slug: "",
     photoURL: "",
-    createdAt: "",
+    createdAt: null,
+    wallpaper: "",
   });
 
   // Get user data
