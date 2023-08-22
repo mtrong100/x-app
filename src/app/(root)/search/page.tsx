@@ -27,16 +27,10 @@ const SearchPage = () => {
     const unsubscribe = onSnapshot(userRef, (snapshot) => {
       let results: UserDataTypes[] = [];
       snapshot.forEach((doc) => {
-        const data = doc.data();
+        const data = doc.data() as UserDataTypes;
         if (data) {
           results.push({
-            uid: doc.id,
-            email: data.email,
-            username: data.username,
-            role: data.role,
-            slug: data.slug,
-            photoURL: data.photoURL,
-            createdAt: data.createdAt,
+            ...data,
           });
         }
       });
