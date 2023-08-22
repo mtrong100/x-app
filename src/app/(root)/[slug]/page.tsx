@@ -1,91 +1,83 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import PostItem, { PostItemSkeleton } from "@/modules/post/PostItem";
-import { useParams } from "next/navigation";
-import { useDispatch } from "react-redux";
-import { TPostData } from "@/types/general.types";
-import { formatDateTime } from "@/utils/reuse-function";
-import { db } from "@/utils/firebase";
-import { BiCalendar } from "react-icons/bi";
-import { AppDispatch, useAppSelector } from "@/redux/store";
-import {
-  collection,
-  getDocs,
-  onSnapshot,
-  orderBy,
-  query,
-  where,
-} from "firebase/firestore";
-import UserAvatar from "@/modules/user/UserAvatar";
 import UserWallpaper from "@/modules/user/UserWallpaper";
-import { v4 } from "uuid";
-import Header from "@/components/header/Header";
-import { storedUserData } from "@/redux/features/userSlice";
 import UserFollowing from "@/modules/user/UserFollowing";
 import UserFollowers from "@/modules/user/UserFollowers";
-import { setPosts } from "@/redux/features/postSlice";
-import ButtonFollow from "@/components/button/ButtonFollow";
-import { tabData } from "@/constants/data";
+import UserAvatar from "@/modules/user/UserAvatar";
+import useFetchUserSlug from "@/hooks/useFetchUserSlug";
+import useFetchTabData from "@/hooks/useFetchTabData";
 import TabItem from "@/components/tab/TabItem";
+import React, { useEffect, useState } from "react";
+import PostItem, { PostItemSkeleton } from "@/modules/post/PostItem";
+import Header from "@/components/header/Header";
+import ButtonFollow from "@/components/button/ButtonFollow";
+import { v4 } from "uuid";
+import { useGetRepostPosts } from "@/hooks/useGetRepostPosts";
+import { useGetPosts } from "@/hooks/useGetPosts";
+import { useGetFavoritePosts } from "@/hooks/useGetFavoritePosts";
+import { useAppSelector } from "@/redux/store";
+import { TPostData } from "@/types/general.types";
+import { tabData } from "@/constants/data";
+import { formatDateTime } from "@/utils/reuse-function";
+import { BiCalendar } from "react-icons/bi";
 /* ====================================================== */
 
 const UserSlugPage = () => {
-  const { slug } = useParams();
-  const dispatch = useDispatch<AppDispatch>();
+  /* Redux */
   const { userData: user } = useAppSelector((state) => state.user);
-  const { posts: postList } = useAppSelector((state) => state.post);
+  const { repostData, favoriteData } = useAppSelector((state) => state.post);
+
+  /* Normal states */
   const [loading, setLoading] = useState(true);
   const [active, setActive] = useState("posts");
   const date = formatDateTime(user?.createdAt);
 
-  // Fetch user data
-  useEffect(() => {
-    async function fetchUser() {
-      if (!slug) return;
-      const userDocRef = query(
-        collection(db, "users"),
-        where("slug", "==", slug)
-      );
-      const querySnapshot = await getDocs(userDocRef);
-      querySnapshot.forEach((doc: any) => {
-        const userData = doc.data();
-        if (userData) {
-          dispatch(
-            storedUserData({
-              ...userData,
-            })
-          );
-        }
-      });
-    }
-    fetchUser();
-  }, [dispatch, slug]);
+  /* <======= Custom hooks ======> */
+  useFetchUserSlug();
+  useFetchTabData({ active, userUID: user?.uid, setLoading });
+  const { postList, getPosts } = useGetPosts({
+    userUID: user?.uid,
+    setLoading,
+  });
+  const { favoriteList, getFavoriteList } = useGetFavoritePosts({
+    data: favoriteData,
+    setLoading,
+  });
+  const { repostList, getRepostList } = useGetRepostPosts({
+    data: repostData,
+    setLoading,
+  });
 
-  // Get user post
+  // Main useEffect
   useEffect(() => {
     setLoading(true);
-    if (!user.uid) return;
-    const postRef = query(
-      collection(db, "posts"),
-      where("userId", "==", user?.uid),
-      orderBy("createdAt", "desc")
-    );
-    const unsubscribe = onSnapshot(postRef, (snapshot) => {
-      let results: TPostData[] = [];
-      snapshot.forEach((doc) => {
-        const postData = doc.data() as TPostData;
-        if (postData) {
-          results.push({
-            ...postData,
-          });
-        }
-      });
-      dispatch(setPosts(results));
-      setLoading(false);
-    });
+    async function fetchPosts() {
+      if (active === "reposts") {
+        return getRepostList();
+      } else if (active === "favorite") {
+        return getFavoriteList();
+      } else {
+        return getPosts();
+      }
+    }
+    fetchPosts();
+  }, [active, getFavoriteList, getPosts, getRepostList]);
 
-    return () => unsubscribe();
-  }, [dispatch, user.uid]);
+  // List to render type of posts
+  const renderPosts = () => {
+    let listToRender: TPostData[] = [];
+
+    if (active === "reposts") {
+      listToRender = repostList;
+    } else if (active === "favorite") {
+      listToRender = favoriteList;
+    } else {
+      listToRender = postList;
+    }
+
+    return listToRender.map((item: TPostData) => (
+      <PostItem key={item.postId} data={item} />
+    ));
+  };
 
   return (
     <>
@@ -133,18 +125,13 @@ const UserSlugPage = () => {
         ))}
       </section>
 
-      {/* Posts */}
       <section className="flex flex-col gap-10 p-5 mt-3">
         {loading &&
           Array(3)
             .fill(0)
             .map(() => <PostItemSkeleton key={v4()} />)}
 
-        {!loading &&
-          postList.length > 0 &&
-          postList.map((item: TPostData) => {
-            return <PostItem key={item.postId} data={item} />;
-          })}
+        {!loading && renderPosts()}
       </section>
     </>
   );

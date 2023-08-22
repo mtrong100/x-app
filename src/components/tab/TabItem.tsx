@@ -18,7 +18,7 @@ const TabItem = ({ value, icon, activeTab, onTabClick }: TabItemProps) => {
       activeStyle = "repost-color";
       hoverStyle = "repost-color-hover";
       break;
-    case "likes":
+    case "favorite":
       activeStyle = "like-color";
       hoverStyle = "like-color-hover";
       break;

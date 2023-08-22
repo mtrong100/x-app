@@ -14,8 +14,8 @@ export const tabData = [
     icon: <AiOutlineRetweet />,
   },
   {
-    name: "Likes",
-    value: "likes",
+    name: "Favorite",
+    value: "favorite",
     icon: <AiOutlineHeart />,
   },
 ];
