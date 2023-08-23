@@ -5,6 +5,7 @@ import UserFollowers from "@/modules/user/UserFollowers";
 import UserAvatar from "@/modules/user/UserAvatar";
 import useFetchUserSlug from "@/hooks/useFetchUserSlug";
 import useFetchTabData from "@/hooks/useFetchTabData";
+import UpdateUser from "@/modules/user/UpdateUser";
 import TabItem from "@/components/tab/TabItem";
 import React, { useEffect, useState } from "react";
 import PostItem, { PostItemSkeleton } from "@/modules/post/PostItem";
@@ -14,14 +15,13 @@ import { v4 } from "uuid";
 import { useGetRepostPosts } from "@/hooks/useGetRepostPosts";
 import { useGetPosts } from "@/hooks/useGetPosts";
 import { useGetFavoritePosts } from "@/hooks/useGetFavoritePosts";
+import { useDisclosure } from "@nextui-org/react";
 import { useAppSelector } from "@/redux/store";
 import { TPostData } from "@/types/general.types";
 import { tabData } from "@/constants/data";
+import { RiUserSettingsLine } from "react-icons/ri";
 import { formatDateTime } from "@/utils/reuse-function";
 import { BiCalendar } from "react-icons/bi";
-import { RiUserSettingsLine } from "react-icons/ri";
-import { useDisclosure } from "@nextui-org/react";
-import UpdateUser from "@/modules/user/UpdateUser";
 /* ====================================================== */
 
 const UserSlugPage = () => {
@@ -60,7 +60,7 @@ const UserSlugPage = () => {
         return getRepostList();
       } else if (active === "favorite") {
         return getFavoriteList();
-      } else {
+      } else if (active === "posts") {
         return getPosts();
       }
     }

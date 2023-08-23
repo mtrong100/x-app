@@ -1,10 +1,8 @@
-import { setPosts } from "@/redux/features/postSlice";
-import { AppDispatch, useAppSelector } from "@/redux/store";
 import { TPostData } from "@/types/general.types";
 import { db } from "@/utils/firebase";
 import { collection, getDocs, orderBy, query, where } from "firebase/firestore";
-import { useCallback } from "react";
-import { useDispatch } from "react-redux";
+import { useCallback, useState } from "react";
+/* ====================================================== */
 
 interface Props {
   userUID: string;
@@ -12,8 +10,7 @@ interface Props {
 }
 
 export const useGetPosts = ({ userUID, setLoading }: Props) => {
-  const dispatch = useDispatch<AppDispatch>();
-  const { posts: postList } = useAppSelector((state) => state.post);
+  const [postList, setPostList] = useState<TPostData[]>([]);
 
   const getPosts = useCallback(async () => {
     if (!userUID) return;
@@ -35,9 +32,9 @@ export const useGetPosts = ({ userUID, setLoading }: Props) => {
       }
     });
 
-    dispatch(setPosts(results));
+    setPostList(results);
     setLoading(false);
-  }, [dispatch, setLoading, userUID]);
+  }, [setLoading, userUID]);
 
   return { postList, getPosts };
 };
