@@ -11,9 +11,11 @@ import {
   onSnapshot,
   setDoc,
 } from "firebase/firestore";
+import { useRouter } from "next/navigation";
 /* ====================================================== */
 
 const ButtonFollow = ({ uid }: { uid: string }) => {
+  const router = useRouter();
   const { user: currentUser } = useAppSelector((state) => state.auth);
   const [userFollowingList, setUserFollowingList] = useState<TFollow[]>([]);
 
@@ -60,6 +62,9 @@ const ButtonFollow = ({ uid }: { uid: string }) => {
 
   // Toggle follow a user
   const toggleFollow = async (uid: string) => {
+    if (!currentUser || !currentUser.email) {
+      router.push("/sign-in");
+    }
     if (!uid && !currentUser.uid) return;
     try {
       const followingDocRef = doc(

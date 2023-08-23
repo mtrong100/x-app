@@ -9,11 +9,13 @@ import {
   onSnapshot,
   setDoc,
 } from "firebase/firestore";
+import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { AiOutlineRetweet } from "react-icons/ai";
 /* ====================================================== */
 
 const RepostPost = ({ postId }: { postId: string }) => {
+  const router = useRouter();
   const { user: currentUser } = useAppSelector((state) => state.auth);
   const [repost, setRepost] = useState<TRepost[]>([]);
   const [userRepost, setUserRepost] = useState<TRepost[]>([]);
@@ -61,6 +63,9 @@ const RepostPost = ({ postId }: { postId: string }) => {
 
   // Handle toggle repost
   const toggleRepost = async (postId: string) => {
+    if (!currentUser || !currentUser.email) {
+      router.push("/sign-in");
+    }
     if (!currentUser.uid) return;
     const repostDoc = doc(db, "posts", postId, "repost", currentUser.uid);
     const repostDocRef = doc(db, "users", currentUser?.uid, "repost", postId);

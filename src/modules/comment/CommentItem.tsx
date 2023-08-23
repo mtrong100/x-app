@@ -15,9 +15,11 @@ import UserMeta from "../user/UserMeta";
 import UserAvatar from "../user/UserAvatar";
 import ImageCmt from "@/components/image/ImageCmt";
 import IconDropdown from "@/components/dropdown/IconDropdown";
+import { useRouter } from "next/router";
 /* ====================================================== */
 
 const CommentItem = ({ data, totalComment, index }: CommentItemProps) => {
+  const router = useRouter();
   const { user } = useAppSelector((state) => state.auth);
   const date = formatDateTime(data?.createdAt);
   const dispatch = useDispatch<AppDispatch>();
@@ -49,12 +51,18 @@ const CommentItem = ({ data, totalComment, index }: CommentItemProps) => {
 
   // Handle toggle comment
   const toggleComment = (commentData: TComment) => {
+    if (!user || !user.email) {
+      router.push("/sign-in");
+    }
     dispatch(storedCommentData(commentData));
     dispatch(setIsUpdateCmt(true));
   };
 
   // Delete comment
   const deleteComment = async (data: TComment) => {
+    if (!user || !user.email) {
+      router.push("/sign-in");
+    }
     if (!data?.postId && !data?.commentId) return;
     const commentDocRef = doc(
       db,

@@ -93,7 +93,7 @@ const UserSlugPage = () => {
     <>
       <Header username={user?.username} amount={postList.length} />
       <div className="relative">
-        <UserWallpaper wallpaper={currentUser?.wallpaper} />
+        <UserWallpaper wallpaper={user?.wallpaper} />
         <UserAvatar
           className="w-[140px] h-[140px] absolute bottom-0 translate-x-2/4 translate-y-2/4 -left-5 border-[5px] border-darkGraphite "
           avatar={user?.photoURL}

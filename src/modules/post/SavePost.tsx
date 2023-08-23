@@ -11,9 +11,11 @@ import {
 } from "firebase/firestore";
 import { db } from "@/utils/firebase";
 import { useAppSelector } from "@/redux/store";
+import { useRouter } from "next/navigation";
 /* ====================================================== */
 
 const SavePost = ({ postId, userId }: { postId: string; userId: string }) => {
+  const router = useRouter();
   const { user: currentUser } = useAppSelector((state) => state.auth);
   const [userSavePost, setUserSavePost] = useState<TSavePost[]>([]);
 
@@ -37,6 +39,9 @@ const SavePost = ({ postId, userId }: { postId: string; userId: string }) => {
 
   // Handle toggle save post
   const toggleSave = async (postId: string) => {
+    if (!currentUser || !currentUser.email) {
+      router.push("/sign-in");
+    }
     if (!currentUser.uid) return;
     const savePostDoc = doc(db, "posts", postId, "save", currentUser.uid);
     const savePostDocRef = doc(db, "users", currentUser?.uid, "save", postId);

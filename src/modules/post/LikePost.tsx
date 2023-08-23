@@ -12,9 +12,11 @@ import {
   setDoc,
 } from "firebase/firestore";
 import { useAppSelector } from "@/redux/store";
+import { useRouter } from "next/navigation";
 /* ====================================================== */
 
 const LikePost = ({ postId }: { postId: string }) => {
+  const router = useRouter();
   const { user: currentUser } = useAppSelector((state) => state.auth);
   const [likes, setLikes] = useState<TLikeData[]>([]);
   const [userFavorite, setUserFavorite] = useState<TFavorite[]>([]);
@@ -60,6 +62,9 @@ const LikePost = ({ postId }: { postId: string }) => {
 
   // Handle toggle like post
   const toggleLike = async (postId: string) => {
+    if (!currentUser || !currentUser.email) {
+      router.push("/sign-in");
+    }
     if (!currentUser.uid) return;
     const likeDocRef = doc(db, "posts", postId, "likes", currentUser.uid);
     const favoriteDocRef = doc(

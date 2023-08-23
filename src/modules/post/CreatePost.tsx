@@ -7,7 +7,6 @@ import {
   ModalFooter,
   Button,
 } from "@nextui-org/react";
-import Image from "next/image";
 import FileInput from "@/components/input/FileInput";
 import useUploadImages from "@/hooks/useUploadImages";
 import { CircularProgress } from "@nextui-org/react";
@@ -25,6 +24,7 @@ import { useAppSelector } from "@/redux/store";
 import ImageDisplay from "@/components/image/ImageDisplay";
 import UserAvatar from "../user/UserAvatar";
 import TextareaAutosize from "react-textarea-autosize";
+import { useRouter } from "next/navigation";
 /* ====================================================== */
 
 const CreatePost = ({
@@ -34,6 +34,7 @@ const CreatePost = ({
   isOpen: boolean;
   onClose: () => void;
 }) => {
+  const router = useRouter();
   const { user } = useAppSelector((state) => state.auth);
   const { images, setImages, progress, handleSelectImage, handleDeleteImage } =
     useUploadImages();
@@ -41,6 +42,9 @@ const CreatePost = ({
 
   // Create new post
   const createPost = async () => {
+    if (!user || !user.email) {
+      router.push("/sign-in");
+    }
     if (!inputVal.trim() || !images) return;
 
     // Replace newline characters with <br> tags
