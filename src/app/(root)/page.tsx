@@ -19,7 +19,6 @@ import {
   getDocs,
 } from "firebase/firestore";
 import TabItem from "@/components/tab/TabItem";
-import useAuthWatcher from "@/hooks/useAuthWatcher";
 /* ================================================================== */
 
 export default function Home() {
