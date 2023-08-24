@@ -52,7 +52,7 @@ const SearchPage = () => {
   );
 
   return (
-    <section className="p-5">
+    <section className="h-screen p-5">
       <Searchbar
         handeSearchQuery={(e) => setSearchVal(e.target.value)}
         query={searchVal}

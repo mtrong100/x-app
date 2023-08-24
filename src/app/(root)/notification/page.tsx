@@ -70,7 +70,7 @@ const NotificationPage = () => {
   }, [data]);
 
   return (
-    <section>
+    <section className="h-screen">
       <header className="flex items-center gap-2 p-5 text-lg font-medium bg-secondaryDark">
         New notifications
         <span className="text-2xl">

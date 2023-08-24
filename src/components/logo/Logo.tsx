@@ -4,7 +4,7 @@ import React from "react";
 
 const Logo = () => {
   return (
-    <div className="pb-3 px-5">
+    <div className="px-5 pb-3">
       <Link href="/">
         <Image
           className="rounded-full w-[50px] h-[50px] flex items-center justify-center hover:bg-darkHover"

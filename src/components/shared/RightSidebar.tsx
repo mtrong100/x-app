@@ -57,7 +57,7 @@ const RightSidebar = () => {
   );
 
   return (
-    <div className="sticky right-0 top-0 z-20 flex h-screen flex-col overflow-auto p-5 w-[380px]">
+    <div className="sticky right-0 hidden lg:flex top-0 z-20  h-screen flex-col overflow-auto p-5 w-[380px]">
       <Searchbar />
 
       {/* Recommended user */}

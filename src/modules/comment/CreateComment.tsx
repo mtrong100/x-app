@@ -69,8 +69,6 @@ const CreateComment = ({
     createdAt: null,
   });
 
-  console.log(postOwner);
-
   /* ========================= Custom hooks =====>> */
   // useUploadImage hook
   const { image, setImage, progress, handleSelectImage } = useUploadImage();

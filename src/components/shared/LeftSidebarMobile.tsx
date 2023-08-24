@@ -2,7 +2,7 @@
 import { TSidebarLinks } from "@/types/general.types";
 import React from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Logo from "../logo/Logo";
 import Swal from "sweetalert2";
 import { EllipsisIcon, LogoutIcon } from "../icons/Icon";
@@ -20,12 +20,18 @@ import {
   ProfileIcon,
   SearchIcon,
 } from "@/components/icons/Icon";
+import { AiOutlinePlus } from "react-icons/ai";
+import UserAvatar from "@/modules/user/UserAvatar";
 /* ====================================================== */
 
-const LeftSidebar = () => {
+const LeftSidebarMobile = () => {
   const pathname = usePathname();
   const { user } = useAppSelector((state) => state.auth);
-  const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const addPost = () => {
+    onOpen();
+  };
 
   const sidebarLinks = [
     {
@@ -57,12 +63,17 @@ const LeftSidebar = () => {
 
   return (
     <>
-      <div
-        className="sticky lg:hidden
-        flex-col left-0 hidden xl:flex top-0 w-[275px] h-screen z-20 overflow-auto border-r border-text_2 bg-primaryGradient p-5"
-      >
-        <Logo />
-        <ul className="flex flex-col items-stretch flex-1 gap-2">
+      <div className="sticky flex-col hidden lg:flex xl:hidden left-0 top-0 w-[80px] h-screen z-20 overflow-auto border-r border-text_2 bg-primaryGradient p-2">
+        <ul className="flex flex-col items-center flex-1 gap-4 ">
+          <Link href="/">
+            <Image
+              className="rounded-full w-[50px] h-[50px] flex items-center justify-center hover:bg-darkHover"
+              src="/logo.png"
+              alt="x-logo"
+              width={40}
+              height={40}
+            />
+          </Link>
           {sidebarLinks.map((link: TSidebarLinks) => {
             const isActive = pathname === link.route;
             return (
@@ -73,56 +84,40 @@ const LeftSidebar = () => {
                   isActive
                     ? "bg-primaryColor text-white"
                     : "hover:bg-darkHover text-cloudGray hover:text-white"
-                } flex items-center gap-3 py-3 text-lg font-medium px-5 w-full rounded-full`}
+                } flex items-center gap-3 h-[50px] w-[50px] text-lg font-medium justify-center  rounded-full`}
               >
                 <span>{link.icon}</span>
-                <div>{link.name}</div>
               </Link>
             );
           })}
           <Signout />
-          <Button
-            onClick={() => onOpen()}
-            className="py-3 text-lg rounded-full"
+          <li
+            onClick={addPost}
+            className={`flex items-center gap-3 bg-primaryColor text-white h-[50px] w-[50px] text-lg font-medium justify-center  rounded-full`}
           >
-            Post
-          </Button>
+            <span className="text-xl">
+              <AiOutlinePlus />
+            </span>
+          </li>
         </ul>
         {/* User */}
         <li className="flex items-center justify-between w-full p-2 rounded-full cursor-pointer hover:bg-darkHover ">
           <div className="flex items-center gap-3">
-            <div className="w-[38px] h-[38px] rounded-full flex-shrink-0">
-              <Image
-                src={user?.photoURL || "/default-avatar.jpg"}
-                width={100}
-                height={100}
-                alt="user-avatar"
-                className="rounded-full img-cover"
-              />
-            </div>
-            <div className="flex-1">
-              <span className="font-semibold text-white">{user?.username}</span>
-              <p className="text-sm text-text_4">{`@${user?.slug}`}</p>
-            </div>
+            <UserAvatar avatar={user?.photoURL} />
           </div>
-          <span>
-            <EllipsisIcon className="text-white" />
-          </span>
         </li>
       </div>
-      <CreatePost
-        onOpenChange={onOpenChange}
-        isOpen={isOpen}
-        onClose={onClose}
-      ></CreatePost>
+      <CreatePost isOpen={isOpen} onClose={onClose}></CreatePost>
     </>
   );
 };
 
-export default LeftSidebar;
+export default LeftSidebarMobile;
 
 // Sign out
 function Signout() {
+  const router = useRouter();
+
   const handleSignout = () => {
     Swal.fire({
       title: "Log out of your account?",
@@ -135,6 +130,7 @@ function Signout() {
     }).then(async (result) => {
       if (result.isConfirmed) {
         signOut(auth);
+        router.push("/sign-in");
       }
     });
   };
@@ -147,7 +143,6 @@ function Signout() {
       <span>
         <LogoutIcon />
       </span>
-      <div>Logout</div>
     </li>
   );
 }
