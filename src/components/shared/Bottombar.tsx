@@ -21,7 +21,7 @@ import CreatePost from "@/modules/post/CreatePost";
 const BottomBar = () => {
   const pathname = usePathname();
   const { user } = useAppSelector((state) => state.auth);
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
   const [show, setShow] = useState(false);
   const router = useRouter();
 
@@ -106,7 +106,11 @@ const BottomBar = () => {
         })}
       </ul>
 
-      <CreatePost isOpen={isOpen} onClose={onClose}></CreatePost>
+      <CreatePost
+        onOpenChange={onOpenChange}
+        isOpen={isOpen}
+        onClose={onClose}
+      ></CreatePost>
     </section>
   );
 };
