@@ -72,17 +72,19 @@ const BookmarkPage = () => {
   }, [saveData]);
 
   return (
-    <section className="flex flex-col gap-10 p-5 mt-3">
-      {loading &&
-        Array(3)
-          .fill(0)
-          .map(() => <PostItemSkeleton key={v4()} />)}
+    <section className="h-screen pb-10">
+      <div className="flex flex-col gap-10 p-5 mt-3">
+        {loading &&
+          Array(3)
+            .fill(0)
+            .map(() => <PostItemSkeleton key={v4()} />)}
 
-      {!loading &&
-        savePosts.length > 0 &&
-        savePosts.map((item: any) => {
-          return <PostItem key={v4()} data={item} />;
-        })}
+        {!loading &&
+          savePosts.length > 0 &&
+          savePosts.map((item: any) => {
+            return <PostItem key={v4()} data={item} />;
+          })}
+      </div>
     </section>
   );
 };

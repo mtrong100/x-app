@@ -117,7 +117,7 @@ export default function Home() {
   }, [active, handleFollowingTab, handleForYouTab]);
 
   return (
-    <>
+    <section className="h-screen lg:h-full">
       <header className="top-0 z-20 lg:sticky bg-darkGraphite bg-opacity-70 backdrop-blur-md ">
         <h1 className="hidden px-5 pt-5 pb-3 text-2xl font-semibold md:block">
           Home
@@ -155,6 +155,6 @@ export default function Home() {
             return <PostItem key={item.postId} data={item} />;
           })}
       </section>
-    </>
+    </section>
   );
 }
