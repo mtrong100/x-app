@@ -26,13 +26,8 @@ import ImageDisplay from "@/components/image/ImageDisplay";
 import UserAvatar from "../user/UserAvatar";
 import TextareaAutosize from "react-textarea-autosize";
 import { useRouter } from "next/navigation";
+import { ModalProps } from "@/types/general.types";
 /* ====================================================== */
-
-interface ModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onOpenChange: (isOpen: boolean) => void;
-}
 
 const CreatePost = ({ isOpen, onClose, onOpenChange }: ModalProps) => {
   const router = useRouter();
@@ -40,6 +35,7 @@ const CreatePost = ({ isOpen, onClose, onOpenChange }: ModalProps) => {
   const { images, setImages, progress, handleSelectImage, handleDeleteImage } =
     useUploadImages();
   const { handleChange, inputVal, setInputVal } = useTextareaChange();
+
   const [modalPlacement, setModalPlacement] = React.useState<
     "center" | "auto" | "top" | "top-center" | "bottom" | "bottom-center"
   >("center");
@@ -82,6 +78,7 @@ const CreatePost = ({ isOpen, onClose, onOpenChange }: ModalProps) => {
     });
   };
 
+  // Check screen size
   const checkScreenSize = useCallback(() => {
     const screenWidth = window.innerWidth;
     if (screenWidth >= 1024) {
@@ -107,13 +104,13 @@ const CreatePost = ({ isOpen, onClose, onOpenChange }: ModalProps) => {
   return (
     <Modal
       placement={modalPlacement}
+      scrollBehavior={scrollBehavior}
       onOpenChange={onOpenChange}
       isOpen={isOpen}
       onClose={onClose}
       size="2xl"
       className=" bg-primaryDark"
       backdrop="blur"
-      scrollBehavior={scrollBehavior}
       motionProps={{
         variants: {
           enter: {
@@ -142,8 +139,13 @@ const CreatePost = ({ isOpen, onClose, onOpenChange }: ModalProps) => {
               Create your new post
             </ModalHeader>
             <ModalBody>
-              <div className="flex items-start h-full gap-3">
-                <UserAvatar avatar={user?.photoURL} />
+              <div className="items-start h-full gap-3 md:flex">
+                <div className="flex items-center gap-3 pb-5">
+                  <UserAvatar avatar={user?.photoURL} />
+                  <span className="text-lg font-semibold text-white  md:hidden">
+                    {user?.username}
+                  </span>
+                </div>
                 <TextareaAutosize
                   className="textareaStyle"
                   placeholder="What is going on!"

@@ -71,7 +71,7 @@ const NotificationPage = () => {
 
   return (
     <section className="h-screen">
-      <header className="flex items-center gap-2 p-5 text-lg font-medium bg-secondaryDark">
+      <header className="flex items-center gap-2 p-5 text-2xl font-semibold lg:font-medium lg:text-lg lg:bg-secondaryDark">
         New notifications
         <span className="text-2xl">
           <MdOutlineNotificationsActive />

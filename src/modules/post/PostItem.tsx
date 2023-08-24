@@ -30,7 +30,7 @@ interface PostItemProps {
 const PostItem = ({ data }: PostItemProps) => {
   const date = formatDateTime(data?.createdAt);
   const dispatch = useDispatch<AppDispatch>();
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
   const { user: currentUser } = useAppSelector((state) => state.auth);
   const [user, setUser] = useState<UserDataTypes>({
     uid: "",
@@ -121,7 +121,11 @@ const PostItem = ({ data }: PostItemProps) => {
           <SavePost postId={data?.postId} userId={data.userId} />
         </div>
       </div>
-      <UpdatePost isOpen={isOpen} onClose={onClose}></UpdatePost>
+      <UpdatePost
+        onOpenChange={onOpenChange}
+        isOpen={isOpen}
+        onClose={onClose}
+      ></UpdatePost>
     </>
   );
 };

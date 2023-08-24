@@ -22,7 +22,7 @@ import { db } from "@/utils/firebase";
 import { AppDispatch, useAppSelector } from "@/redux/store";
 /* ====================================================== */
 
-const UpdateUser = ({ isOpen, onClose }: ModalProps) => {
+const UpdateUser = ({ isOpen, onClose, onOpenChange }: ModalProps) => {
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
   const { user: currentUser } = useAppSelector((state) => state.auth);
@@ -96,6 +96,7 @@ const UpdateUser = ({ isOpen, onClose }: ModalProps) => {
         backdrop="blur"
         isOpen={isOpen}
         onClose={onClose}
+        onOpenChange={onOpenChange}
         scrollBehavior="outside"
         motionProps={{
           variants: {

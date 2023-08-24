@@ -11,7 +11,7 @@ interface UserWallpaperProps {
 
 const UserWallpaper = ({
   wallpaper = "",
-  className = "w-full h-[200px]",
+  className = "w-full h-[175px] md:h-[300px] lg:h-[200px]",
   hasIcon = false,
   handleSelectImage,
 }: UserWallpaperProps) => {

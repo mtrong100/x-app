@@ -8,11 +8,11 @@ const UserMeta = ({ username, slug, date }: UserMetaProps) => {
     <div className="flex items-center gap-1">
       <Link
         href={`/${slug}`}
-        className="font-medium text-white hover:underline"
+        className="text-sm font-medium text-white md:text-base hover:underline"
       >
         {username}
       </Link>
-      <span className="text-sm text-text_4">{`@${slug}`}</span>
+      <span className="hidden text-sm md:block text-text_4">{`@${slug}`}</span>
       <span className="text-lg font-bold">.</span>
       <span className="text-sm text-text_4">{date}</span>
     </div>

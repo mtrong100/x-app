@@ -15,7 +15,7 @@ import UserMeta from "../user/UserMeta";
 import UserAvatar from "../user/UserAvatar";
 import ImageCmt from "@/components/image/ImageCmt";
 import IconDropdown from "@/components/dropdown/IconDropdown";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 /* ====================================================== */
 
 const CommentItem = ({ data, totalComment, index }: CommentItemProps) => {

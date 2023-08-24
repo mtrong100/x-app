@@ -31,7 +31,7 @@ const UserSlugPage = () => {
   const { repostData, favoriteData } = useAppSelector((state) => state.post);
 
   /* Others */
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
   const [loading, setLoading] = useState(true);
   const [active, setActive] = useState("posts");
   const date = formatDateTime(user?.createdAt);
@@ -154,7 +154,11 @@ const UserSlugPage = () => {
         {!loading && renderPosts()}
       </section>
 
-      <UpdateUser isOpen={isOpen} onClose={onClose}></UpdateUser>
+      <UpdateUser
+        onOpenChange={onOpenChange}
+        isOpen={isOpen}
+        onClose={onClose}
+      ></UpdateUser>
     </>
   );
 };

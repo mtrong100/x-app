@@ -36,8 +36,8 @@ const TabItem = ({ value, icon, activeTab, onTabClick }: TabItemProps) => {
         activeTab === value ? `${activeStyle}` : `${hoverStyle}`
       } default-tab`}
     >
-      {value}
-      <span className="text-xl">{icon}</span>
+      <span className="text-sm md:text-base">{value}</span>
+      <span className="md:text-xl">{icon}</span>
     </div>
   );
 };

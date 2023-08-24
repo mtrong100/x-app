@@ -15,7 +15,7 @@ interface CommentPostProps {
 }
 
 const CommentPost = ({ data }: CommentPostProps) => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
   const dispatch = useDispatch<AppDispatch>();
   const [commentList, setCommentList] = useState<TComment[]>([]);
 
@@ -62,7 +62,11 @@ const CommentPost = ({ data }: CommentPostProps) => {
         </span>
         <span>{commentList && commentList.length}</span>
       </div>
-      <CreateComment isOpen={isOpen} onClose={onClose}></CreateComment>
+      <CreateComment
+        onOpenChange={onOpenChange}
+        isOpen={isOpen}
+        onClose={onClose}
+      ></CreateComment>
     </>
   );
 };

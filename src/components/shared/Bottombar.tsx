@@ -72,7 +72,7 @@ const BottomBar = () => {
   ];
 
   return (
-    <section className="fixed bottom-0 w-full bg-primaryGradient lg:hidden py-3 z-[99]">
+    <section className="fixed bottom-0 w-full bg-primaryGradient lg:hidden py-3 z-[50]">
       <ul className="flex items-center justify-around gap-4 ">
         {sidebarLinks.map((link: any) => {
           const isActive = pathname === link.route;
@@ -83,7 +83,7 @@ const BottomBar = () => {
                 onClick={link.onClick}
                 className={`${
                   link.name === "toggle" ? "" : "bg-primaryColor text-white"
-                } flex justify-center items-center cursor-pointer h-[50px] w-[50px] rounded-full  font-bold`}
+                } flex justify-center items-center cursor-pointer w-[40px] h-[40px] md:h-[50px] md:w-[50px] rounded-full  font-bold`}
               >
                 <span className="text-2xl">{link.icon}</span>
               </li>
@@ -98,9 +98,9 @@ const BottomBar = () => {
                 isActive
                   ? "bg-primaryColor text-white"
                   : "hover:bg-darkHover text-cloudGray hover:text-white"
-              } flex items-center gap-3 h-[50px] w-[50px]  text-lg font-medium justify-center rounded-full`}
+              } flex items-center gap-3 w-[40px] h-[40px] md:h-[50px] md:w-[50px] font-medium justify-center rounded-full`}
             >
-              <span>{link.icon}</span>
+              <span className="md:text-lg">{link.icon}</span>
             </Link>
           );
         })}

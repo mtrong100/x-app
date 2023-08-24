@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   Modal,
   ModalContent,
@@ -31,7 +31,7 @@ import UserAvatar from "../user/UserAvatar";
 import UserMeta from "../user/UserMeta";
 import ImageCmt from "@/components/image/ImageCmt";
 import ImageDisplay from "@/components/image/ImageDisplay";
-import { TComment } from "@/types/general.types";
+import { ModalProps, TComment } from "@/types/general.types";
 import { toast } from "react-toastify";
 /* ====================================================== */
 
@@ -44,13 +44,7 @@ type TUserData = {
   createdAt: any;
 };
 
-const CreateComment = ({
-  isOpen,
-  onClose,
-}: {
-  isOpen: boolean;
-  onClose: () => void;
-}) => {
+const CreateComment = ({ isOpen, onClose, onOpenChange }: ModalProps) => {
   const { user } = useAppSelector((state) => state.auth);
   const dispatch = useDispatch<AppDispatch>();
   const { postItemData: currentPost } = useAppSelector((state) => state.post);
@@ -68,6 +62,16 @@ const CreateComment = ({
     photoURL: "",
     createdAt: null,
   });
+
+  const [modalPlacement, setModalPlacement] = React.useState<
+    "center" | "auto" | "top" | "top-center" | "bottom" | "bottom-center"
+  >("center");
+  const [scrollBehavior, setScrollBehavior] = React.useState<
+    "outside" | "inside" | "normal"
+  >("outside");
+  const [size, setSize] = React.useState<
+    "md" | "xs" | "sm" | "lg" | "xl" | "2xl" | "3xl" | "4xl" | "5xl" | "full"
+  >("2xl");
 
   /* ========================= Custom hooks =====>> */
   // useUploadImage hook
@@ -203,7 +207,6 @@ const CreateComment = ({
   const handleReset = () => {
     dispatch(setIsUpdateCmt(false));
     setImage("");
-    onClose();
   };
 
   // Delete old image
@@ -241,154 +244,180 @@ const CreateComment = ({
     }
   };
 
+  // Check screen size
+  const checkScreenSize = useCallback(() => {
+    const screenWidth = window.innerWidth;
+    if (screenWidth >= 1024) {
+      setModalPlacement("top-center");
+      setScrollBehavior("outside");
+      setSize("2xl");
+    } else {
+      setSize("full");
+      setModalPlacement("top");
+      setScrollBehavior("inside");
+    }
+  }, []);
+
+  // Check screen for modal
+  useEffect(() => {
+    checkScreenSize();
+
+    window.addEventListener("resize", checkScreenSize);
+
+    return () => {
+      window.removeEventListener("resize", checkScreenSize);
+    };
+  }, [checkScreenSize]);
+
   return (
-    <>
-      <Modal
-        size="2xl"
-        className="bg-primaryDark"
-        backdrop="blur"
-        isOpen={isOpen}
-        onClose={onClose}
-        scrollBehavior="outside"
-        motionProps={{
-          variants: {
-            enter: {
-              y: 0,
-              opacity: 1,
-              transition: {
-                duration: 0.3,
-                ease: "easeOut",
-              },
-            },
-            exit: {
-              y: -20,
-              opacity: 0,
-              transition: {
-                duration: 0.2,
-                ease: "easeIn",
-              },
+    <Modal
+      placement={modalPlacement}
+      scrollBehavior={scrollBehavior}
+      onOpenChange={onOpenChange}
+      size={size}
+      className="bg-primaryDark"
+      backdrop="blur"
+      isOpen={isOpen}
+      onClose={onClose}
+      motionProps={{
+        variants: {
+          enter: {
+            y: 0,
+            opacity: 1,
+            transition: {
+              duration: 0.3,
+              ease: "easeOut",
             },
           },
-        }}
-      >
-        <ModalContent>
-          {(onClose) => (
-            <section ref={modalRef}>
-              <ModalHeader className="flex flex-col gap-1 text-xl font-semibold text-white">
-                Comments
-              </ModalHeader>
-              <ModalBody className="gap-0">
-                <div className="relative flex items-start gap-3 pb-3">
-                  <UserAvatar avatar={postOwner?.photoURL} />
+          exit: {
+            y: -20,
+            opacity: 0,
+            transition: {
+              duration: 0.2,
+              ease: "easeIn",
+            },
+          },
+        },
+      }}
+    >
+      <ModalContent>
+        {(onClose) => (
+          <section
+            style={{
+              zIndex: "99999",
+            }}
+            ref={modalRef}
+          >
+            <ModalHeader className="flex flex-col gap-1 text-xl font-semibold text-white">
+              Comments
+            </ModalHeader>
+            <ModalBody className="gap-0 bg-primaryDark">
+              <div className="relative flex items-start gap-3 pb-3">
+                <UserAvatar avatar={postOwner?.photoURL} />
 
-                  <div className="flex-1">
-                    <UserMeta
-                      username={postOwner?.username}
-                      slug={postOwner?.slug}
-                      date={date}
-                    />
-                    <p className="mt-1 text-base">{currentPost?.content}</p>
-                    <ImageDisplay
-                      images={currentPost.photos}
-                      hideIcon={false}
-                    />
-                    <div className="flex items-center gap-1 mt-1 text-sm font-medium">
-                      <span className="text-text_3">Replying to</span>
-                      <span className=" text-primaryColor">{`@${postOwner?.slug}`}</span>
-                    </div>
-                  </div>
-
-                  {/* Line */}
-                  <div className="verical-line"></div>
-                </div>
-
-                {/* Add comment here */}
-                <section className="flex flex-col gap-4">
-                  <div className="relative flex items-start w-full gap-3 pb-3">
-                    <UserAvatar avatar={user?.photoURL} />
-
-                    {/* User comment here */}
-                    <div
-                      className={`${
-                        isInputFocused || isUpdateCmt
-                          ? "border-primaryColor"
-                          : "border-transparent"
-                      } relative w-full min-h-[88px] border-2 bg-secondaryDark p-3 rounded-lg`}
-                    >
-                      {isUpdateCmt ? (
-                        <TextareaAutosize
-                          value={updateCmt}
-                          onChange={(
-                            e: React.ChangeEvent<HTMLTextAreaElement>
-                          ) => setUpdateCmt(e.target.value)}
-                          onFocus={() => setIsInputFocused(true)}
-                          onBlur={() => setIsInputFocused(false)}
-                          className="w-full mb-2 bg-transparent outline-none resize-none placeholder:text-text_3"
-                          placeholder="Update your reply..."
-                        />
-                      ) : (
-                        <TextareaAutosize
-                          value={commentVal}
-                          onChange={handleChange}
-                          onFocus={() => setIsInputFocused(true)}
-                          onBlur={() => setIsInputFocused(false)}
-                          className="w-full mb-2 bg-transparent outline-none resize-none placeholder:text-text_3"
-                          placeholder="Post your reply..."
-                        />
-                      )}
-
-                      {!image && progress === 0 && <></>}
-                      {progress !== 0 && !image && (
-                        <Loading fullHeight={false} />
-                      )}
-                      {image && (
-                        <ImageCmt onClick={handleDeleteImage} image={image} />
-                      )}
-                    </div>
-                  </div>
-                </section>
-
-                {/* Upload image & post comment */}
-                <div className="flex items-center justify-end gap-3">
-                  <FileInput
-                    multiple={false}
-                    handleSelectImage={handleSelectImage}
+                <div className="flex-1">
+                  <UserMeta
+                    username={postOwner?.username}
+                    slug={postOwner?.slug}
+                    date={date}
                   />
-                  <Button
-                    color="danger"
-                    variant="ghost"
-                    className="mt-1"
-                    onClick={handleReset}
-                  >
-                    Close
-                  </Button>
-                  {isUpdateCmt ? (
-                    <Button color="primary" onClick={updateComment}>
-                      Update
-                    </Button>
-                  ) : (
-                    <Button
-                      onClick={createComment}
-                      className="text-white rounded-lg bg-primaryColor"
-                    >
-                      Post
-                    </Button>
-                  )}
+                  <p className="mt-1 text-base">{currentPost?.content}</p>
+                  <ImageDisplay images={currentPost.photos} hideIcon={false} />
+                  <div className="flex items-center gap-1 mt-1 text-sm font-medium">
+                    <span className="text-text_3">Replying to</span>
+                    <span className=" text-primaryColor">{`@${postOwner?.slug}`}</span>
+                  </div>
                 </div>
-              </ModalBody>
-              <ModalFooter className="py-0">
-                <section className="w-full ">
-                  <h2 className="mb-5 font-semibold border-b xl:text-2xl text-cloudGray border-text_2">
-                    Other comments
-                  </h2>
-                  <CommentList postId={currentPost?.postId} />
-                </section>
-              </ModalFooter>
-            </section>
-          )}
-        </ModalContent>
-      </Modal>
-    </>
+
+                {/* Line */}
+                <div className="verical-line"></div>
+              </div>
+
+              {/* Add comment here */}
+              <section className="flex flex-col gap-4">
+                <div className="relative flex items-start w-full gap-3 pb-3">
+                  <UserAvatar avatar={user?.photoURL} />
+
+                  {/* User comment here */}
+                  <div
+                    className={`${
+                      isInputFocused || isUpdateCmt
+                        ? "border-primaryColor"
+                        : "border-transparent"
+                    } relative w-full min-h-[88px] border-2 bg-secondaryDark p-3 rounded-lg`}
+                  >
+                    {isUpdateCmt ? (
+                      <TextareaAutosize
+                        value={updateCmt}
+                        onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+                          setUpdateCmt(e.target.value)
+                        }
+                        onFocus={() => setIsInputFocused(true)}
+                        onBlur={() => setIsInputFocused(false)}
+                        className="w-full mb-2 bg-transparent outline-none resize-none placeholder:text-text_3"
+                        placeholder="Update your reply..."
+                      />
+                    ) : (
+                      <TextareaAutosize
+                        value={commentVal}
+                        onChange={handleChange}
+                        onFocus={() => setIsInputFocused(true)}
+                        onBlur={() => setIsInputFocused(false)}
+                        className="w-full mb-2 bg-transparent outline-none resize-none placeholder:text-text_3"
+                        placeholder="Post your reply..."
+                      />
+                    )}
+
+                    {!image && progress === 0 && <></>}
+                    {progress !== 0 && !image && <Loading fullHeight={false} />}
+                    {image && (
+                      <ImageCmt onClick={handleDeleteImage} image={image} />
+                    )}
+                  </div>
+                </div>
+              </section>
+
+              {/* Upload image & post comment */}
+              <div className="flex items-center justify-end gap-3">
+                <FileInput
+                  multiple={false}
+                  handleSelectImage={handleSelectImage}
+                />
+                <Button
+                  color="danger"
+                  variant="ghost"
+                  className="mt-1"
+                  onPress={onClose}
+                  onClick={handleReset}
+                >
+                  Close
+                </Button>
+                {isUpdateCmt ? (
+                  <Button color="primary" onClick={updateComment}>
+                    Update
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={createComment}
+                    className="text-white rounded-lg bg-primaryColor"
+                  >
+                    Post
+                  </Button>
+                )}
+              </div>
+            </ModalBody>
+            <ModalFooter className="py-0 bg-primaryDark">
+              <section className="w-full mt-6">
+                <h2 className="mb-5 text-2xl font-semibold border-b text-cloudGray border-text_2">
+                  Other comments
+                </h2>
+                <CommentList postId={currentPost?.postId} />
+              </section>
+            </ModalFooter>
+          </section>
+        )}
+      </ModalContent>
+    </Modal>
   );
 };
 

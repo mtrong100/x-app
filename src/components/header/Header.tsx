@@ -2,15 +2,15 @@ import Link from "next/link";
 import React from "react";
 import { BsArrowLeftShort } from "react-icons/bs";
 
-const Header = ({
-  username = "",
-  amount = 0,
-}: {
+interface HeaderProps {
   username: string;
   amount: number;
-}) => {
+  className?: string;
+}
+
+const Header = ({ username = "", amount = 0, className = "" }: HeaderProps) => {
   return (
-    <header className="p-3 bg-secondaryDark">
+    <header className={`${className} p-3 bg-secondaryDark`}>
       <div className="flex items-center gap-5">
         <Link
           href="/"

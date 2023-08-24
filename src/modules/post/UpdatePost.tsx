@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 import {
   Modal,
   ModalContent,
@@ -23,12 +23,22 @@ import { ModalProps, TPostData } from "@/types/general.types";
 import TextareaAutosize from "react-textarea-autosize";
 /* ====================================================== */
 
-const UpdatePost = ({ isOpen, onClose }: ModalProps) => {
+const UpdatePost = ({ isOpen, onClose, onOpenChange }: ModalProps) => {
   const { images, setImages, progress, handleSelectImage } = useUploadImages();
   const dispatch = useDispatch<AppDispatch>();
   const { handleChange, inputVal, setInputVal } = useTextareaChange();
   const { user } = useAppSelector((state) => state.auth);
   const { postItemData: postData } = useAppSelector((state) => state.post);
+
+  const [modalPlacement, setModalPlacement] = React.useState<
+    "center" | "auto" | "top" | "top-center" | "bottom" | "bottom-center"
+  >("center");
+  const [scrollBehavior, setScrollBehavior] = React.useState<
+    "outside" | "inside" | "normal"
+  >("outside");
+  const [size, setSize] = React.useState<
+    "md" | "xs" | "sm" | "lg" | "xl" | "2xl" | "3xl" | "4xl" | "5xl" | "full"
+  >("2xl");
 
   // Set post data
   useEffect(() => {
@@ -94,15 +104,42 @@ const UpdatePost = ({ isOpen, onClose }: ModalProps) => {
     }
   };
 
+  // Check screen size
+  const checkScreenSize = useCallback(() => {
+    const screenWidth = window.innerWidth;
+    if (screenWidth >= 1024) {
+      setModalPlacement("top-center");
+      setScrollBehavior("outside");
+      setSize("2xl");
+    } else {
+      setSize("2xl");
+      setModalPlacement("center");
+      setScrollBehavior("inside");
+    }
+  }, []);
+
+  // Check screen for modal
+  useEffect(() => {
+    checkScreenSize();
+
+    window.addEventListener("resize", checkScreenSize);
+
+    return () => {
+      window.removeEventListener("resize", checkScreenSize);
+    };
+  }, [checkScreenSize]);
+
   return (
     <>
       <Modal
-        size="2xl"
+        size={size}
+        isOpen={isOpen}
+        onOpenChange={onOpenChange}
+        scrollBehavior={scrollBehavior}
+        placement={modalPlacement}
         className="bg-primaryDark"
         backdrop="blur"
-        isOpen={isOpen}
         onClose={onClose}
-        scrollBehavior="outside"
         motionProps={{
           variants: {
             enter: {

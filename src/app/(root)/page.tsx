@@ -119,8 +119,10 @@ export default function Home() {
   return (
     <>
       <header className="top-0 z-20 lg:sticky bg-darkGraphite bg-opacity-70 backdrop-blur-md ">
-        <h1 className="px-5 pt-5 pb-3 text-2xl font-semibold">Home</h1>
-        <div className="flex items-center gap-1 border-b border-text_2">
+        <h1 className="hidden px-5 pt-5 pb-3 text-2xl font-semibold md:block">
+          Home
+        </h1>
+        <div className="flex items-center border-b border-text_2">
           {homeTab.map((item) => (
             <TabItem
               key={v4()}

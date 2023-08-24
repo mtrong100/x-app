@@ -10,7 +10,7 @@ const Header = () => {
   const { user } = useAppSelector((state) => state.auth);
 
   return (
-    <section className="sticky z-[99] top-0 flex lg:hidden items-center justify-between w-full px-8 py-3 bg-secondaryDark">
+    <section className="sticky z-[50] top-0 flex lg:hidden items-center justify-between w-full px-5 md:px-8 py-1 md:py-3 bg-darkGraphite">
       <Link href="/">
         <Image
           className="rounded-full w-[50px] h-[50px] flex items-center justify-center hover:bg-darkHover"

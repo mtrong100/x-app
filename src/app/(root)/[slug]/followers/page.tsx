@@ -47,8 +47,12 @@ const FollowersPage = () => {
   }, [dispatch, followers]);
 
   return (
-    <>
-      <Header username={user?.username} amount={postList.length} />
+    <section className="h-screen">
+      <Header
+        className="hidden md:block"
+        username={user?.username}
+        amount={postList.length}
+      />
       <div className="flex flex-col gap-2 p-5">
         {loading &&
           Array(5)
@@ -59,7 +63,7 @@ const FollowersPage = () => {
           userList.length > 0 &&
           userList.map((item) => <UserItem data={item} key={item.uid} />)}
       </div>
-    </>
+    </section>
   );
 };
 

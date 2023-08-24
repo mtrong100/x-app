@@ -115,6 +115,7 @@ export type TSaveData = {
 export interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onOpenChange: (isOpen: boolean) => void;
 }
 
 export type TUpdateUser = {
