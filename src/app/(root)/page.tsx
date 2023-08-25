@@ -117,7 +117,7 @@ export default function Home() {
   }, [active, handleFollowingTab, handleForYouTab]);
 
   return (
-    <section className="h-screen lg:h-full">
+    <section>
       <header className="top-0 z-20 lg:sticky bg-darkGraphite bg-opacity-70 backdrop-blur-md ">
         <h1 className="hidden px-5 pt-5 pb-3 text-2xl font-semibold md:block">
           Home
@@ -135,7 +135,7 @@ export default function Home() {
       </header>
 
       {/* Rendering posts */}
-      <section className="flex flex-col gap-10 p-5 ">
+      <section className="flex flex-col h-full gap-10 p-5">
         {loading &&
           Array(3)
             .fill(0)

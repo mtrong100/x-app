@@ -72,7 +72,7 @@ const BookmarkPage = () => {
   }, [saveData]);
 
   return (
-    <section className="h-screen pb-10">
+    <section className="">
       <div className="flex flex-col gap-10 p-5 mt-3">
         {loading &&
           Array(3)

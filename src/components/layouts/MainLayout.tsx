@@ -14,11 +14,11 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
     <AuthProvider>
       <ToastProvider>
         <NextuiProvider>
-          <main className="lg:flex flex-row w-full max-w-[1300px] mx-auto">
+          <main className="lg:flex lg:max-w-[1300px] lg:mx-auto">
             <LeftSidebar />
             <LeftSidebarMobile />
             <Header />
-            <section className="w-full pb-20 lg:flex-1 lg:border-r lg:max-w-2xl lg:border-text_2">
+            <section className="flex-1 pb-20 lg:pb-0 lg:border-r lg:max-w-2xl lg:border-text_2">
               {children}
             </section>
             <BottomBar />

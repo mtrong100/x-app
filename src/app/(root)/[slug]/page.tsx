@@ -90,7 +90,7 @@ const UserSlugPage = () => {
   };
 
   return (
-    <>
+    <section>
       <Header username={user?.username} amount={postList.length} />
       <div className="relative">
         <UserWallpaper wallpaper={user?.wallpaper} />
@@ -159,7 +159,7 @@ const UserSlugPage = () => {
         isOpen={isOpen}
         onClose={onClose}
       ></UpdateUser>
-    </>
+    </section>
   );
 };
 

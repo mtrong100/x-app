@@ -1,5 +1,4 @@
 "use client";
-import Header from "@/components/header/Header";
 import UserItem, { UserItemSkeleton } from "@/modules/user/UserItem";
 import { AppDispatch, useAppSelector } from "@/redux/store";
 import { UserDataTypes } from "@/types/general.types";
@@ -47,12 +46,7 @@ const FollowersPage = () => {
   }, [dispatch, followers]);
 
   return (
-    <section className="h-screen">
-      <Header
-        className="hidden md:block"
-        username={user?.username}
-        amount={postList.length}
-      />
+    <section>
       <div className="flex flex-col gap-2 p-5">
         {loading &&
           Array(5)

@@ -8,7 +8,7 @@
     @apply scroll-smooth;
   }
   body {
-    @apply bg-darkGraphite text-cloudGray;
+    @apply bg-darkGraphite text-cloudGray min-h-screen;
   }
   .page-container {
     @apply w-full max-w-[1440px] mx-auto px-5;
