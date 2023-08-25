@@ -47,8 +47,8 @@ const SiginPage = () => {
   };
 
   return (
-    <div className="flex items-center justify-center w-full h-screen ">
-      <div className="w-full gap-10 p-5 rounded-lg shadow-blurPrimary md:max-w-lg bg-secondaryDark">
+    <div className="flex items-center justify-center w-full h-screen">
+      <div className="w-full max-w-sm gap-10 p-5 rounded-lg shadow-blurPrimary md:max-w-lg bg-secondaryDark">
         <Link href="/">
           <Image
             className="rounded-full w-[50px] h-[50px] flex items-center justify-center hover:bg-darkHover"
