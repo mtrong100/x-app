@@ -142,7 +142,7 @@ const CreatePost = ({ isOpen, onClose, onOpenChange }: ModalProps) => {
               <div className="items-start h-full gap-3 md:flex">
                 <div className="flex items-center gap-3 pb-5">
                   <UserAvatar avatar={user?.photoURL} />
-                  <span className="text-lg font-semibold text-white  md:hidden">
+                  <span className="text-lg font-semibold text-white md:hidden">
                     {user?.username}
                   </span>
                 </div>
