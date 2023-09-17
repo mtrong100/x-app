@@ -31,13 +31,10 @@ const LoginWithGithub = () => {
       if (userDocSnapshot.exists()) {
         const userDocData = userDocSnapshot.data();
         await updateDoc(userDocRef, {
-          uid: data.uid,
           username: userDocData?.username,
           slug: userDocData?.slug,
-          email: userDocData?.email,
           photoURL: userDocData?.photoURL,
           wallpaper: userDocData?.wallpaper,
-          role: userDocData?.role,
         });
       } else {
         await setDoc(doc(db, "users", data.uid), {
