@@ -13,6 +13,11 @@
 - Update User
 - Fully Responsive
 
+### Preview
+- [Link here](https://x-app-blush.vercel.app/)
+![image](https://github.com/mtrong100/x-app/assets/94778246/ecad10a3-bcde-40af-9da9-380d375f72b9)
+
+
 ### How to run ?
 
 - npm install
